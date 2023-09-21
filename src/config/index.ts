@@ -1,1 +1,1 @@
-export const APP_NAME = import.meta.env.APP_NAME as string;
+export const APP_NAME = import.meta.env.VITE_APP_NAME as string;
