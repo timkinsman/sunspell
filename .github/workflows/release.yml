@@ -1,0 +1,25 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ['Bump Version']
+    types:
+      - completed
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Extract version
+        id: extract_version
+        uses: Saionaro/extract-package-version@v1.0.6
+
+      - name: Tag and create release v${{ steps.extract_version.outputs.version }}
+        uses: avakar/tag-and-release@v1
+        with:
+          tag_name: v${{ steps.extract_version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
