@@ -1,4 +1,3 @@
-import { APP_NAME } from '../../config';
 import { Helmet } from 'react-helmet-async';
 
 type HeadProps = {
@@ -8,7 +7,7 @@ type HeadProps = {
 
 export const Head = ({ title = '', description = '' }: HeadProps) => {
   return (
-    <Helmet title={title ? `${title} | ${APP_NAME}` : undefined} defaultTitle={APP_NAME}>
+    <Helmet title={title ? `${title} | Transparency` : undefined} defaultTitle={'Transparency'}>
       <meta name="description" content={description} />
     </Helmet>
   );
