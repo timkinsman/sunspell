@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 import { Spinner } from '@/components/Elements';
 import { MainLayout } from '@/components/Layout';
@@ -28,6 +28,9 @@ export const protectedRoutes = [
   {
     path: '/app',
     element: <App />,
-    children: [{ index: true, element: <Dashboard /> }],
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: '*', element: <Navigate to="." /> },
+    ],
   },
 ];

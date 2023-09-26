@@ -7,6 +7,7 @@ import { Notifications } from '@/components/Notifications';
 import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { queryClient } from '@/lib/react-query';
+import { AuthProvider } from './auth';
 
 const ErrorFallback = () => {
   return (
@@ -40,7 +41,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           <QueryClientProvider client={queryClient}>
             {import.meta.env.DEV && <ReactQueryDevtools />}
             <Notifications />
-            <Router>{children}</Router>
+            <AuthProvider>
+              <Router>{children}</Router>
+            </AuthProvider>
           </QueryClientProvider>
         </HelmetProvider>
       </ErrorBoundary>
