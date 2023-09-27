@@ -4,14 +4,21 @@ import storage from '@/utils/storage';
 import { getProfile } from '@/features/user/api/getProfile';
 import { useNotificationStore } from '@/stores/notifications';
 
+const logout = () => {
+  storage.clearToken();
+  window.location.assign(window.location.origin);
+};
+
 export interface useAuthProps {
-  user?: UserProfile;
   isLoggingIn: boolean;
+  logout: () => void;
+  user?: UserProfile;
 }
 
 export const AuthContext = React.createContext<useAuthProps>({
-  user: undefined,
   isLoggingIn: false,
+  logout,
+  user: undefined,
 } as useAuthProps);
 
 type AuthProviderProps = {
@@ -52,10 +59,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const memoizedContextValue = React.useMemo<useAuthProps>(
     () => ({
-      user,
       isLoggingIn,
+      logout,
+      user,
     }),
-    [user, isLoggingIn]
+    [isLoggingIn, user]
   );
 
   return <AuthContext.Provider value={memoizedContextValue}>{children}</AuthContext.Provider>;

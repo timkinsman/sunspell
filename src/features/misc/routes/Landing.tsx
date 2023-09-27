@@ -1,18 +1,15 @@
-import { useNavigate } from 'react-router';
-
 import { Button } from '@/components/Elements';
 import { Head } from '@/components/Head';
 import { useAuth } from '@/hooks/useAuth';
 
 export const Landing = () => {
-  const auth = useAuth();
-  const navigate = useNavigate();
+  const { isLoggingIn, user } = useAuth();
 
   const handleStart = () => {
-    if (auth.user) {
-      navigate('/app');
+    if (user) {
+      window.location.assign('/app');
     } else {
-      navigate('/auth/login');
+      window.location.assign('/auth/login');
     }
   };
 
@@ -46,9 +43,9 @@ export const Landing = () => {
                     />
                   </svg>
                 }
-                isLoading={auth.isLoggingIn}
+                isLoading={isLoggingIn}
               >
-                {auth.user ? `Continue as ${auth.user.display_name}` : 'Get started'}
+                {user ? `Continue as ${user.display_name}` : 'Get started'}
               </Button>
             </div>
           </div>

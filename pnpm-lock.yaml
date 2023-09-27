@@ -39,8 +39,8 @@ dependencies:
     specifier: ^6.16.0
     version: 6.16.0(react@18.2.0)
   react-router-dom:
-    specifier: ^6.16.0
-    version: 6.16.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: 6.0.0-beta.0
+    version: 6.0.0-beta.0(history@5.3.0)(react-dom@18.2.0)(react@18.2.0)
   type-fest:
     specifier: ^1.4.0
     version: 1.4.0
@@ -1796,6 +1796,12 @@ packages:
       function-bind: 1.1.1
     dev: true
 
+  /history@5.3.0:
+    resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
+    dependencies:
+      '@babel/runtime': 7.22.15
+    dev: false
+
   /hosted-git-info@2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
     dev: true
@@ -2636,17 +2642,29 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /react-router-dom@6.16.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-aTfBLv3mk/gaKLxgRDUPbPw+s4Y/O+ma3rEN1u8EgEpLpPe6gNjIsWt9rxushMHHMb7mSwxRGdGlGdvmFsyPIg==}
-    engines: {node: '>=14.0.0'}
+  /react-router-dom@6.0.0-beta.0(history@5.3.0)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-36yNNGMT8RB9FRPL9nKJi6HKDkgOakU+o/2hHpSzR6e37gN70MpOU6QQlmif4oAWWBwjyGc3ZNOMFCsFuHUY5w==}
     peerDependencies:
+      history: '>=5'
       react: '>=16.8'
       react-dom: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.9.0
+      history: 5.3.0
+      prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-router: 6.16.0(react@18.2.0)
+      react-router: 6.0.0-beta.0(history@5.3.0)(react@18.2.0)
+    dev: false
+
+  /react-router@6.0.0-beta.0(history@5.3.0)(react@18.2.0):
+    resolution: {integrity: sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==}
+    peerDependencies:
+      history: '>=5'
+      react: '>=16.8'
+    dependencies:
+      history: 5.3.0
+      prop-types: 15.8.1
+      react: 18.2.0
     dev: false
 
   /react-router@6.16.0(react@18.2.0):
