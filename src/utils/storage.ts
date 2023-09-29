@@ -1,4 +1,4 @@
-const storagePrefix = `transparency_`;
+const storagePrefix = `sunspell_`;
 
 const storage = {
   getToken: () => {
