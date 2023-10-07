@@ -2,14 +2,8 @@ import { ContentLayout } from '@/components/Layout';
 import { UseTopOptions, useTop } from '../api/getTop';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
-import { Select } from '@/components/Elements';
+import { Button, Select } from '@/components/Elements';
 
-const limits = [
-  { id: '20', name: '20' },
-  { id: '30', name: '30' },
-  { id: '40', name: '40' },
-  { id: '50', name: '50' },
-];
 const types = [
   { id: 'artists', name: 'Artists' },
   { id: 'tracks', name: 'Tracks' },
@@ -22,33 +16,33 @@ const timeRanges = [
 
 export const Dashboard = () => {
   const { user } = useAuth();
-  const [limit, setLimit] = useState(limits[0]);
+  const [limit, setLimit] = useState(20);
   const [type, setType] = useState(types[0]);
   const [timeRange, setTimeRange] = useState(timeRanges[0]);
 
   const topQuery = useTop({
     type: type.id as UseTopOptions['type'],
     timeRange: timeRange.id as UseTopOptions['timeRange'],
-    limit: parseInt(limit.id),
     config: { enabled: !!user },
   });
 
   if (!user) return null;
 
+  const items = topQuery.data?.items.slice(0, limit);
+
   return (
     <ContentLayout title="Dashboard">
-      <h1 className="text-xl mt-2 mb-8">
+      <h1 className="text-xl mt-2">
         Welcome <b>{user.display_name}</b>
       </h1>
       <div>
-        <div className="flex gap-2 mb-4">
-          <Select selected={limit} setSelected={setLimit} items={limits} />
+        <div className="flex gap-2 mt-8">
           <Select selected={type} setSelected={setType} items={types} />
           <Select selected={timeRange} setSelected={setTimeRange} items={timeRanges} />
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
-          {topQuery.data?.items.map((item) => {
+        <div className="grid grid-cols-4 gap-4 mt-4">
+          {items?.map((item) => {
             let src = '';
 
             if (item.type === 'artist') {
@@ -69,6 +63,22 @@ export const Dashboard = () => {
             );
           })}
         </div>
+
+        {limit === 20 && (
+          <div className="flex justify-center mt-4">
+            <Button onClick={() => setLimit(40)} variant="outlined">
+              Show more
+            </Button>
+          </div>
+        )}
+
+        {limit === 40 && (
+          <div className="flex justify-center mt-4">
+            <Button onClick={() => setLimit(20)} variant="outlined">
+              Show less
+            </Button>
+          </div>
+        )}
       </div>
     </ContentLayout>
   );

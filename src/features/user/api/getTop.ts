@@ -9,7 +9,7 @@ export const getTop = ({
    * long_term (calculated from several years of data and including all new data as it becomes available), medium_term (approximately last 6 months), short_term (approximately last 4 weeks)
    */
   timeRange = 'long_term',
-  limit = 20,
+  limit = 40,
   offset,
 }: {
   type: 'artists' | 'tracks';
@@ -32,7 +32,7 @@ export type UseTopOptions = {
 
 export const useTop = ({ type, timeRange, limit, offset, config }: UseTopOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ['top', type, timeRange, limit],
+    queryKey: ['top', type, timeRange],
     queryFn: () => getTop({ type, timeRange, limit, offset }),
     ...config,
   });
