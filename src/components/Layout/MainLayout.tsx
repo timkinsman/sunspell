@@ -15,7 +15,13 @@ const UserNavigation = () => {
   const { logout, user } = useAuth();
 
   const userNavigation = [
-    { name: 'Your Profile', to: './profile' },
+    {
+      name: 'Your Profile',
+      to: '',
+      onClick: () => {
+        window.open(user?.uri, '_blank');
+      },
+    },
     {
       name: 'Sign out',
       to: '',
