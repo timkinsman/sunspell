@@ -8,13 +8,17 @@ const Footer = () => {
       <div className="w-full mx-auto max-w-7xl py-4 px-4 sm:px-6 md:px-8 md:flex md:items-center md:justify-between">
         <span className="text-sm text-gray-500 sm:text-center">
           Developed by{' '}
-          <a href="https://github.com/timkinsman" className="hover:underline">
+          <a href="https://github.com/timkinsman" className="hover:underline" target="_blank">
             Tim Kinsman
           </a>
         </span>
         <ul className="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 sm:mt-0">
           <li>
-            <a href="https://github.com/timkinsman/sunspell" className="hover:underline">
+            <a
+              href="https://github.com/timkinsman/sunspell"
+              className="hover:underline"
+              target="_blank"
+            >
               Source code
             </a>
           </li>
