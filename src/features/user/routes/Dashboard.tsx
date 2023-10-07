@@ -16,7 +16,7 @@ const timeRanges = [
 
 export const Dashboard = () => {
   const { user } = useAuth();
-  const [limit, setLimit] = useState(20);
+  const [more, setMore] = useState(false);
   const [type, setType] = useState(types[0]);
   const [timeRange, setTimeRange] = useState(timeRanges[0]);
 
@@ -28,7 +28,7 @@ export const Dashboard = () => {
 
   if (!user) return null;
 
-  const items = topQuery.data?.items.slice(0, limit);
+  const items = topQuery.data?.items.slice(0, more ? 40 : 20);
 
   return (
     <ContentLayout title="Dashboard">
@@ -42,7 +42,7 @@ export const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-4 gap-4 mt-4">
-          {items?.map((item) => {
+          {items?.map((item, i) => {
             let src = '';
 
             if (item.type === 'artist') {
@@ -52,33 +52,28 @@ export const Dashboard = () => {
             }
 
             return (
-              <img
-                alt={item.name}
-                className="aspect-square object-cover hover:cursor-pointer hover:opacity-50 transition-all"
-                onClick={() => {
-                  window.open(item.uri, '_blank');
-                }}
-                src={src}
-              />
+              <div className="relative group">
+                <img
+                  alt={item.name}
+                  className="aspect-square object-cover hover:cursor-pointer hover:opacity-50 transition-all"
+                  onClick={() => {
+                    window.open(item.uri, '_blank');
+                  }}
+                  src={src}
+                />
+                <div className="opacity-0 group-hover:opacity-100 duration-300 absolute inset-x-0 bottom-0 flex justify-center items-end text-l bg-gray-200 bg-opacity-75 font-semibold p-2">
+                  {i + 1} - {item.name}
+                </div>
+              </div>
             );
           })}
         </div>
 
-        {limit === 20 && (
-          <div className="flex justify-center mt-4">
-            <Button onClick={() => setLimit(40)} variant="outlined">
-              Show more
-            </Button>
-          </div>
-        )}
-
-        {limit === 40 && (
-          <div className="flex justify-center mt-4">
-            <Button onClick={() => setLimit(20)} variant="outlined">
-              Show less
-            </Button>
-          </div>
-        )}
+        <div className="flex justify-center mt-4">
+          <Button onClick={() => setMore(!more)} variant="outlined">
+            Show {more ? 'less' : 'more'}
+          </Button>
+        </div>
       </div>
     </ContentLayout>
   );
