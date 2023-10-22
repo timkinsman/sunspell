@@ -3,6 +3,7 @@ import { UseTopOptions, useTop } from '../api/getTop';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import { Button, Select } from '@/components/Elements';
+import { Skeleton } from '@/components/Elements/Skeleton';
 
 const types = [
   { id: 'artists', name: 'Artists' },
@@ -28,7 +29,8 @@ export const Dashboard = () => {
 
   if (!user) return null;
 
-  const items = topQuery.data?.items.slice(0, more ? 40 : 20);
+  const limit = more ? 40 : 20
+  const items = topQuery.data?.items.slice(0, limit);
 
   return (
     <ContentLayout title="Dashboard">
@@ -42,35 +44,45 @@ export const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4 sm:grid-cols-4">
-          {items?.map((item, i) => {
-            let src = '';
+          {topQuery.isLoading &&
+            Array(limit)
+              .fill(true)
+              .map(() => (
+                <Skeleton>
+                  <img className="aspect-square object-cover" src="" />
+                </Skeleton>
+              ))}
 
-            if (item.type === 'artist') {
-              src = item.images[0].url;
-            } else {
-              src = item.album.images[0].url;
-            }
+          {topQuery.isSuccess &&
+            items?.map((item, i) => {
+              let src = '';
 
-            return (
-              <div className="relative group">
-                <img
-                  alt={item.name}
-                  className="aspect-square object-cover hover:cursor-pointer hover:opacity-50 transition-all"
-                  onClick={() => {
-                    window.open(item.uri, '_blank');
-                  }}
-                  src={src}
-                />
-                <div className="opacity-0 group-hover:opacity-100 duration-300 absolute inset-x-0 bottom-0 flex justify-center items-end text-l bg-gray-200 bg-opacity-75 font-semibold p-2">
-                  {i + 1} - {item.name}
+              if (item.type === 'artist') {
+                src = item.images[0].url;
+              } else {
+                src = item.album.images[0].url;
+              }
+
+              return (
+                <div className="relative group rounded overflow-hidden">
+                  <img
+                    alt={item.name}
+                    className="aspect-square object-cover hover:cursor-pointer hover:opacity-50 transition-all"
+                    onClick={() => {
+                      window.open(item.uri, '_blank');
+                    }}
+                    src={src}
+                  />
+                  <div className="opacity-0 group-hover:opacity-100 duration-300 absolute inset-x-0 bottom-0 flex justify-center items-end text-l bg-gray-200 bg-opacity-75 font-semibold p-2">
+                    {i + 1} - {item.name}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
 
         <div className="flex justify-center mt-4">
-          <Button onClick={() => setMore(!more)} variant="outlined">
+          <Button disabled={topQuery.isLoading} onClick={() => setMore(!more)} variant="outlined">
             Show {more ? 'less' : 'more'}
           </Button>
         </div>
