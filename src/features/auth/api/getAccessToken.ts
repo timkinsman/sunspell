@@ -1,6 +1,8 @@
 import { REDIRECT_URI } from '@/config';
+import { useAuthenticationStore } from '../stores/authentication';
+import { Authentication } from '../types';
 
-export async function getAccessToken(clientId: string, code: string): Promise<string> {
+export async function getAccessToken(clientId: string, code: string): Promise<void> {
   const verifier = localStorage.getItem('verifier');
 
   const params = new URLSearchParams();
@@ -10,14 +12,15 @@ export async function getAccessToken(clientId: string, code: string): Promise<st
   params.append('redirect_uri', REDIRECT_URI);
   params.append('code_verifier', verifier!);
 
-  const result = await fetch('https://accounts.spotify.com/api/token', {
+  const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params,
   });
 
-  if (!result.ok) throw result.statusText;
+  if (!response.ok) throw response.statusText;
 
-  const { access_token } = await result.json();
-  return access_token;
+  const result = (await response.json()) as Authentication;
+
+  useAuthenticationStore.getState().setAuthentication(result);
 }

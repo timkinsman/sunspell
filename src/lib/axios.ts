@@ -1,12 +1,11 @@
 import { API_URL } from '@/config';
+import { useAuthenticationStore } from '@/features/auth/stores/authentication';
 import { useNotificationStore } from '@/stores/notifications';
-import storage from '@/utils/storage';
 import Axios, { InternalAxiosRequestConfig } from 'axios';
-
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
-  const token = storage.getToken();
-  if (token) {
-    config.headers.authorization = `Bearer ${token}`;
+  const authentication = useAuthenticationStore.getState().authentication;
+  if (authentication) {
+    config.headers.authorization = `${authentication.token_type} ${authentication.access_token}`;
   }
   return config;
 }
