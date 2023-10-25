@@ -2,7 +2,10 @@ import { ContentLayout } from '@/components/Layout';
 import { UseTopOptions, useTop } from '../api/getTop';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
-import { Button, Select } from '@/components/Elements';
+import {
+  Button,
+  // Select
+} from '@/components/Elements';
 import { Skeleton } from '@/components/Elements/Skeleton';
 
 const types = [
@@ -18,18 +21,18 @@ const timeRanges = [
 export const Dashboard = () => {
   const { user } = useAuth();
   const [more, setMore] = useState(false);
-  const [type, setType] = useState(types[0]);
-  const [timeRange, setTimeRange] = useState(timeRanges[0]);
+  // const [type, setType] = useState(types[1]);
+  // const [timeRange, setTimeRange] = useState(timeRanges[2]);
 
   const topQuery = useTop({
-    type: type.id as UseTopOptions['type'],
-    timeRange: timeRange.id as UseTopOptions['timeRange'],
+    type: types[1].id as UseTopOptions['type'],
+    timeRange: timeRanges[2].id as UseTopOptions['timeRange'],
     config: { enabled: !!user },
   });
 
   if (!user) return null;
 
-  const limit = more ? 40 : 20
+  const limit = more ? 40 : 20;
   const items = topQuery.data?.items.slice(0, limit);
 
   return (
@@ -38,12 +41,12 @@ export const Dashboard = () => {
         Welcome <b>{user.display_name}</b>
       </h1>
       <div>
-        <div className="flex gap-2 mt-8">
+        {/* <div className="flex gap-2 mt-8">
           <Select selected={type} setSelected={setType} items={types} />
           <Select selected={timeRange} setSelected={setTimeRange} items={timeRanges} />
-        </div>
+        </div> */}
 
-        <div className="grid grid-cols-2 gap-4 mt-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 mt-8 sm:grid-cols-4">
           {topQuery.isLoading &&
             Array(limit)
               .fill(true)
