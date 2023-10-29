@@ -36,7 +36,7 @@ const UserNavigation = () => {
       {({ open }) => (
         <>
           <div>
-            <Menu.Button className="max-w-xs  bg-gray-200 p-2 flex items-center text-sm rounded-full focus:outline-none">
+            <Menu.Button className="max-w-xs bg-gray-200 p-2 flex items-center text-sm rounded-full focus:outline-none">
               <img className="rounded-full h-8 mr-2" src={user?.images[0].url} />
               {user?.display_name}
             </Menu.Button>

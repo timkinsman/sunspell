@@ -7,6 +7,7 @@ import { useCreatePlaylist } from '@/features/user/api/createPlaylist';
 import { useAuth } from '@/hooks/useAuth';
 import { useAddItemsToPlaylist } from '@/features/user/api/addItemsToPlaylist';
 import { ArtistObject, TrackObject } from '@/features/user';
+import { Button } from '..';
 
 const limit = 20;
 
@@ -116,9 +117,9 @@ export const Modal = ({
                   </div>
                 </div>
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button
-                    type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                  <Button
+                    size="sm"
+                    className="sm:ml-3 sm:w-auto"
                     onClick={async () => {
                       try {
                         const user_id = user?.id;
@@ -149,16 +150,17 @@ export const Modal = ({
                     }}
                     disabled={createPlaylistMutation.isLoading}
                   >
-                    Generate
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                    Confirm
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outlined"
+                    className="sm:w-auto"
                     onClick={onClose}
                     ref={cancelButtonRef}
                   >
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               </Dialog.Panel>
             </Transition.Child>

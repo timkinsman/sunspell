@@ -6,11 +6,12 @@ import { Spinner } from '@/components/Elements/Spinner';
 const variants = {
   primary: 'bg-gray-950 text-white shadow-sm',
   outlined: 'border-gray-300',
-  ghost: 'border-transparent',
+  ghost: 'border-transparent hover:text-gray-900 hover:bg-gray-100',
   danger: 'bg-red-600 text-white',
 };
 
 const sizes = {
+  xs: 'p-1.5 text-sm',
   sm: 'py-2 px-4 text-sm',
   md: 'py-2 px-6 text-md',
   lg: 'py-3 px-8 text-lg',

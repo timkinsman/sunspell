@@ -4,13 +4,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import { Button, Select } from '@/components/Elements';
 import { Skeleton } from '@/components/Elements/Skeleton';
-import { Modal } from '@/components/Elements/Modal';
+// import { Modal } from '@/components/Elements/Modal';
 import { Checkbox } from '@/components/Elements/Checkbox';
 import { useArray } from '@/hooks/useArray';
 import clsx from 'clsx';
 import { Toast } from '@/components/Elements/Toast';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { ArtistObject, TrackObject } from '..';
+import { Drawer } from '@/components/Elements/Drawer';
 
 const types = [
   { id: 'artists', name: 'Artists' },
@@ -120,7 +121,8 @@ export const Dashboard = () => {
           </Button>
         </div>
 
-        <Modal open={isOpen} onClose={close} seedValues={seedValues} />
+        <Drawer open={isOpen} onClose={close} seedValues={seedValues} />
+        {/* <Modal open={isOpen} onClose={close} seedValues={seedValues} /> */}
         <Toast
           title={`${seedValues.length} item${seedValues.length > 1 ? 's' : ''} selected`}
           open={seedValues.length > 0}
