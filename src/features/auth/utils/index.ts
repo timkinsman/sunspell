@@ -10,7 +10,7 @@ export async function redirectToAuthCodeFlow(clientId: string) {
   params.append('client_id', clientId);
   params.append('response_type', 'code');
   params.append('redirect_uri', REDIRECT_URI);
-  params.append('scope', 'user-read-private user-read-email user-top-read');
+  params.append('scope', 'user-read-private user-read-email user-top-read playlist-modify-public playlist-modify-private');
   params.append('code_challenge_method', 'S256');
   params.append('code_challenge', challenge);
 
