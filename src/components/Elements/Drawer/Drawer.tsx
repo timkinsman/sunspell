@@ -4,26 +4,41 @@ import { useRecommendations } from '@/features/user/api/getRecommendations';
 import { useAuth } from '@/hooks/useAuth';
 import clsx from 'clsx';
 import React from 'react';
+import * as z from 'zod';
 import { Skeleton } from '../Skeleton';
 import { ArtistObject, TrackObject } from '@/features/user';
 import { Button } from '..';
 import { IconButton } from '../IconButton';
+import { Form, InputField, TextAreaField } from '@/components/Form';
 
 const limit = 20;
+
+const schema = z.object({
+  name: z.string(),
+  description: z.string(),
+});
+
+// can react hook form return the placeholder ot me anyways????
+const placeholder = {
+  name: 'Sunspell',
+  description: 'Created',
+};
 
 export const Drawer = ({
   open,
   onClose,
   seedValues,
+  onSuccess,
 }: {
   open: boolean;
   onClose: () => void;
   seedValues: (ArtistObject | TrackObject)[];
+  onSuccess: () => void;
 }) => {
   const { user } = useAuth();
 
   const recommendationQuery = useRecommendations({
-    limit: 40, // fetch more to enable re-rolling without re-fetching
+    limit: 20, // 40, fetch more to enable re-rolling without re-fetching
     seed_values: seedValues,
     config: { enabled: open },
   });
@@ -81,7 +96,60 @@ export const Drawer = ({
 
         <p className="text-sm text-gray-500">Information about creating a playlist</p>
       </div>
-      <div className="grid grid-cols-2 gap-4 mt-8 sm:grid-cols-4 p-4">
+      <div className="p-4">
+        <Form<{ name: string; description: string }, typeof schema>
+          id="create-playlist"
+          onSubmit={async (values) => {
+            try {
+              const user_id = user?.id;
+
+              if (user_id) {
+                const playlist = await createPlaylistMutation.mutateAsync({
+                  user_id,
+                  name: values.name ?? placeholder.name,
+                  description: values.description ?? placeholder.description,
+                });
+
+                if (items) {
+                  await addItemsToPlaylistMutation.mutateAsync({
+                    playlist_id: playlist.id,
+                    uris: items.map((item) => item.uri),
+                  });
+
+                  onClose();
+                  onSuccess();
+                  // reset form values on success
+                } else {
+                  throw new Error('Tracks to add does not exist!');
+                }
+              } else {
+                throw new Error('User id does not exist!');
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          }}
+          schema={schema}
+        >
+          {({ register, formState }) => (
+            <>
+              <InputField
+                label="Name"
+                error={formState.errors['name']}
+                registration={register('name')}
+                placeholder={placeholder.name}
+              />
+              <TextAreaField
+                label="Description"
+                error={formState.errors['description']}
+                registration={register('description')}
+                placeholder={placeholder.description}
+              />
+            </>
+          )}
+        </Form>
+      </div>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 p-4">
         {recommendationQuery.isLoading &&
           Array(limit)
             .fill(true)
@@ -105,7 +173,7 @@ export const Drawer = ({
                   }}
                   src={src}
                 />
-                <div className="opacity-0 group-hover:opacity-100 duration-300 absolute inset-x-0 bottom-0 flex justify-center items-end text-l bg-gray-200 bg-opacity-75 font-semibold p-2">
+                <div className="opacity-0 group-hover:opacity-100 duration-300 absolute inset-x-0 bottom-0 flex justify-center items-end text-sm bg-gray-200 bg-opacity-75 font-semibold p-2">
                   {i + 1} - {item.name}
                 </div>
               </div>
@@ -119,35 +187,9 @@ export const Drawer = ({
           Cancel
         </Button>
         <Button
-          onClick={async () => {
-            try {
-              const user_id = user?.id;
-
-              if (user_id) {
-                const playlist = await createPlaylistMutation.mutateAsync({
-                  user_id,
-                  name: 'sunspell',
-                  description: 'hehe',
-                });
-
-                if (items) {
-                  await addItemsToPlaylistMutation.mutateAsync({
-                    playlist_id: playlist.id,
-                    uris: items.map((item) => item.uri),
-                  });
-
-                  onClose();
-                } else {
-                  throw new Error('Tracks to add does not exist!');
-                }
-              } else {
-                throw new Error('User id does not exist!');
-              }
-            } catch (error) {
-              console.error(error);
-            }
-          }}
           isLoading={createPlaylistMutation.isLoading || addItemsToPlaylistMutation.isLoading}
+          form="create-playlist"
+          type="submit"
         >
           Confirm
         </Button>

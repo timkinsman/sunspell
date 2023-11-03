@@ -84,7 +84,7 @@ export const Dashboard = () => {
               return (
                 <div
                   className={clsx('relative group rounded overflow-hidden', {
-                    ['outline outline-2 outline-orange-500']: checked,
+                    ['outline outline-4 outline-orange-500']: checked,
                   })}
                 >
                   <img
@@ -97,9 +97,10 @@ export const Dashboard = () => {
                   />
                   <div className="opacity-0 group-hover:opacity-100 duration-300 absolute left-0 top-0 p-2">
                     <Checkbox
+                      size="md"
                       checked={checked}
                       onCheckedChange={() => toggleSeedValues(item)}
-                      disabled={seedValues.length >= 5 && !seedValues.includes(item)}
+                      disabled={(seedValues.length >= 5 && !seedValues.includes(item)) || isOpen}
                     />
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 duration-300 absolute inset-x-0 bottom-0 flex justify-center items-end text-l bg-gray-200 bg-opacity-75 font-semibold p-2">
@@ -121,11 +122,16 @@ export const Dashboard = () => {
           </Button>
         </div>
 
-        <Drawer open={isOpen} onClose={close} seedValues={seedValues} />
+        <Drawer
+          open={isOpen}
+          onClose={close}
+          seedValues={seedValues}
+          onSuccess={removeAllSeedValues}
+        />
         {/* <Modal open={isOpen} onClose={close} seedValues={seedValues} /> */}
         <Toast
           title={`${seedValues.length} item${seedValues.length > 1 ? 's' : ''} selected`}
-          open={seedValues.length > 0}
+          open={seedValues.length > 0 && !isOpen}
           action={open}
           onClose={removeAllSeedValues}
         />
