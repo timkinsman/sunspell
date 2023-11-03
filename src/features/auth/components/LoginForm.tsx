@@ -1,10 +1,10 @@
 import { Button } from '@/components/Elements';
 import { getAccessToken } from '../api/getAccessToken';
 import { redirectToAuthCodeFlow } from '../utils';
-import storage from '@/utils/storage';
 import { useEffect, useState } from 'react';
 import { CLIENT_ID } from '@/config';
 import { useNotificationStore } from '@/stores/notifications';
+import { useAuth } from '@/hooks/useAuth';
 
 const clientId = CLIENT_ID;
 const params = new URLSearchParams(window.location.search);
@@ -16,14 +16,14 @@ type LoginFormProps = {
 
 export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { logout } = useAuth();
 
   useEffect(() => {
     async function login(code: string) {
       try {
         setIsLoggingIn(true);
 
-        const accessToken = await getAccessToken(clientId, code);
-        storage.setToken(accessToken);
+        await getAccessToken(clientId, code);
 
         onSuccess();
       } catch (error) {
@@ -31,18 +31,16 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           .getState()
           .addNotification({ type: 'error', title: 'Error', message: `${error}` });
 
-        storage.clearToken();
+        logout();
       } finally {
         setIsLoggingIn(false);
       }
     }
 
-    if (!code) {
-      // do nothing
-    } else {
+    if (code) {
       login(code);
     }
-  }, [onSuccess]);
+  }, [onSuccess, logout]);
 
   return (
     <div>
