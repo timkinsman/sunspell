@@ -6,7 +6,6 @@ import { MainLayout } from '@/components/Layout';
 import { lazyImport } from '@/utils/lazyImport';
 
 const { Dashboard } = lazyImport(() => import('@/features/user'), 'Dashboard');
-// const { Profile } = lazyImport(() => import('@/features/user'), 'Profile');
 
 // eslint-disable-next-line react-refresh/only-export-components
 const App = () => {
@@ -30,7 +29,6 @@ export const protectedRoutes = [
     path: '/app',
     element: <App />,
     children: [
-      // { path: '/profile', element: <Profile /> },
       { path: '/', element: <Dashboard /> },
       { path: '*', element: <Navigate to="." /> },
     ],
