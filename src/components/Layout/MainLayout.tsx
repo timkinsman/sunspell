@@ -4,6 +4,16 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '@/hooks/useAuth';
+import {
+  Avatar,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Heading,
+  Text,
+} from '@nayhoo/components';
 
 type UserNavigationItem = {
   name: string;
@@ -17,65 +27,42 @@ const UserNavigation = () => {
   const userNavigation = [
     {
       name: 'Your Profile',
-      to: '',
       onClick: () => {
         window.open(user?.uri, '_blank');
       },
     },
     {
       name: 'Sign out',
-      to: '',
       onClick: () => {
         logout();
       },
     },
   ].filter(Boolean) as UserNavigationItem[];
 
+  const username = user?.display_name;
+
   return (
-    <Menu as="div" className="ml-3 relative">
-      {({ open }) => (
-        <>
-          <div>
-            <Menu.Button className="max-w-xs bg-gray-200 p-2 flex items-center text-sm rounded-full focus:outline-none">
-              <img className="rounded-full h-8 mr-2" src={user?.images[0].url} />
-              {user?.display_name}
-            </Menu.Button>
-          </div>
-          <Transition
-            show={open}
-            as={React.Fragment}
-            enter="transition ease-out duration-100"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
-          >
-            <Menu.Items
-              static
-              className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-            >
-              {userNavigation.map((item) => (
-                <Menu.Item key={item.name}>
-                  {({ active }) => (
-                    <Link
-                      onClick={item.onClick}
-                      to={item.to}
-                      className={clsx(
-                        active ? 'bg-gray-100' : '',
-                        'block px-4 py-2 text-sm text-gray-700'
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  )}
-                </Menu.Item>
-              ))}
-            </Menu.Items>
-          </Transition>
-        </>
-      )}
-    </Menu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">
+          <Avatar
+            alt={`${username}'s Spotify profile picture`}
+            css={{ mr: '$2' }}
+            fallback={username?.[0]}
+            src={user?.images[0].url}
+          />
+          <Text>{username}</Text>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent css={{ zIndex: '$1' }}>
+        {userNavigation.map((item) => (
+          <DropdownMenuItem key={item.name} onClick={item.onClick}>
+            {item.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -90,7 +77,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
           <div className="flex-1 px-4 flex justify-start">
             <div className="flex items-center">
-              <h1 className="text-xl">Sunspell</h1>
+              <Heading>Sunspell</Heading>
             </div>
           </div>
           <div className="flex-1 px-4 flex justify-end">
