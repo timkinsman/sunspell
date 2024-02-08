@@ -5,8 +5,8 @@ import {
   XCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline';
+import { IconButton } from '@nayhoo/components';
 import { Fragment } from 'react';
-import { IconButton } from '../Elements/IconButton';
 
 const icons = {
   info: <InformationCircleIcon className="h-6 w-6 text-blue-500" aria-hidden="true" />,

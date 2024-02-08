@@ -20,6 +20,7 @@
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^1.0.6",
     "@hookform/resolvers": "^3.3.2",
+    "@nayhoo/components": "^0.2.1",
     "axios": "^1.5.0",
     "clsx": "^2.0.0",
     "nanoid": "^5.0.1",

@@ -2,12 +2,12 @@ import { ContentLayout } from '@/components/Layout';
 import { UseTopOptions, useTop } from '../api/getTop';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
-import { Button } from '@/components/Elements';
 import { useArray } from '@/hooks/useArray';
 import { ArtistObject, TrackObject } from '..';
 import { useCreatePlaylist } from '../api/createPlaylist';
 import { useAddItemsToPlaylist } from '../api/addItemsToPlaylist';
 import { useRecommendations } from '../api/getRecommendations';
+import { Button, Flex, Grid, Heading } from '@nayhoo/components';
 
 const placeholder = {
   name: 'Sunspell',
@@ -51,62 +51,60 @@ export const Dashboard = () => {
 
   return (
     <ContentLayout title="Dashboard">
-      <div className="flex items-center flex-col">
-        <h1 className="text-xl mt-2">
+      <Flex align="center" direction="column">
+        <Heading className="mt-2">
           Welcome <b>{user.display_name}</b>!
-        </h1>
-        <div>
-          <div className="grid gap-2 mt-8 grid-cols-2">
-            <Button
-              isLoading={isLoading}
-              onClick={async () => {
-                try {
-                  setIsLoading(true);
+        </Heading>
+        <Grid columns={2} gap={2} css={{ mt: '$6' }}>
+          <Button
+            loading={isLoading}
+            onClick={async () => {
+              try {
+                setIsLoading(true);
 
-                  const { data: top } = await getTop();
-                  const items = top?.items?.slice(0, 5);
+                const { data: top } = await getTop();
+                const items = top?.items?.slice(0, 5);
 
-                  setSeedValues(items ?? []);
+                setSeedValues(items ?? []);
 
-                  const user_id = user?.id;
+                const user_id = user?.id;
 
-                  if (user_id) {
-                    const playlist = await createPlaylist({
-                      user_id,
-                      name: placeholder.name,
-                      description: placeholder.description,
+                if (user_id) {
+                  const playlist = await createPlaylist({
+                    user_id,
+                    name: placeholder.name,
+                    description: placeholder.description,
+                  });
+
+                  const { data: recommendations } = await getRecommendations();
+                  const items = recommendations?.tracks;
+
+                  if (items) {
+                    await addItemsToPlaylist({
+                      playlist_id: playlist.id,
+                      uris: items.map((item) => item.uri),
                     });
-
-                    const { data: recommendations } = await getRecommendations();
-                    const items = recommendations?.tracks;
-
-                    if (items) {
-                      await addItemsToPlaylist({
-                        playlist_id: playlist.id,
-                        uris: items.map((item) => item.uri),
-                      });
-                    } else {
-                      throw new Error('Tracks to add does not exist!');
-                    }
                   } else {
-                    throw new Error('User id does not exist!');
+                    throw new Error('Tracks to add does not exist!');
                   }
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  removeAllSeedValues();
-                  setIsLoading(false);
+                } else {
+                  throw new Error('User id does not exist!');
                 }
-              }}
-            >
-              Simple
-            </Button>
-            <Button disabled={isLoading}>Advanced</Button>
-          </div>
-        </div>
+              } catch (error) {
+                console.error(error);
+              } finally {
+                removeAllSeedValues();
+                setIsLoading(false);
+              }
+            }}
+          >
+            Simple
+          </Button>
+          <Button disabled={isLoading}>Advanced</Button>
+        </Grid>
 
-        <h1 className="text-xl mt-2 mt-8">How it works?</h1>
-      </div>
+        <Heading css={{ mt: '$6' }}>How it works?</Heading>
+      </Flex>
     </ContentLayout>
   );
 };

@@ -2,12 +2,12 @@ import * as React from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Button, Spinner } from '@/components/Elements';
 import { Notifications } from '@/components/Notifications';
 import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { queryClient } from '@/lib/react-query';
 import { AuthProvider } from './auth';
+import { Button, Spinner } from '@nayhoo/components';
 
 const ErrorFallback = () => {
   return (
@@ -32,7 +32,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     <React.Suspense
       fallback={
         <div className="flex items-center justify-center w-screen screen">
-          <Spinner size="xl" />
+          <Spinner />
         </div>
       }
     >
