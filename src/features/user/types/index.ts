@@ -29,7 +29,7 @@ export type Results = {
   offset: number;
   previous: string | null;
   total: number;
-  items: ArtistObject[] | TrackObject[];
+  items: /* ArtistObject[] | */ TrackObject[];
 };
 
 export type ArtistObject = {
