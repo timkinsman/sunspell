@@ -17,8 +17,8 @@ const ErrorFallback = () => {
       css={{ height: '100vh', width: '100vw' }}
       role="alert"
     >
-      <Heading size="3">Ooops, something went wrong :( </Heading>
-      <Button css={{ mt: '$2' }} onClick={() => window.location.assign(window.location.origin)}>
+      <Heading size="1">Sorry, something went wrong.</Heading>
+      <Button css={{ mt: '$4' }} onClick={() => window.location.assign(window.location.origin)}>
         Refresh
       </Button>
     </Flex>

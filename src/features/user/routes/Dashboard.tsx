@@ -18,9 +18,13 @@ import {
   FormSubmit,
   Grid,
   Heading,
+  IconButton,
+  Paragraph,
   TextArea,
   TextField,
+  Tooltip,
 } from '@nayhoo/components';
+import { howItWorks } from '@/constants';
 
 const placeholder = {
   name: 'Sunspell',
@@ -31,6 +35,12 @@ const timeRanges = [
   { id: 'long_term', name: 'Lifetime' },
   { id: 'medium_term', name: 'Last 6 months' },
   { id: 'short_term', name: 'Last 4 weeks' },
+];
+
+const steps = [
+  { label: 'Step1', value: 1 },
+  { label: 'Step2', value: 2 },
+  { label: 'Step3', value: 3 },
 ];
 
 export const Dashboard = () => {
@@ -69,7 +79,11 @@ export const Dashboard = () => {
     config: { enabled: false },
   });
 
-  const create = async (pool: TrackObject[] = []) => {
+  const create = async (
+    pool: TrackObject[] = [],
+    name = placeholder.name,
+    description = placeholder.description
+  ) => {
     try {
       setIsLoading(true);
 
@@ -80,8 +94,8 @@ export const Dashboard = () => {
       if (user_id) {
         const playlist = await createPlaylist({
           user_id,
-          name: placeholder.name,
-          description: placeholder.description,
+          name: name.length > 0 ? name : placeholder.name,
+          description: description.length > 0 ? description : placeholder.description,
         });
 
         const { data: recommendations } = await getRecommendations();
@@ -148,7 +162,7 @@ export const Dashboard = () => {
       case 2: {
         // tracks
         return (
-          <Flex direction="column">
+          <Flex direction="column" align="center">
             <Flex gap={2} wrap="wrap">
               {top?.items.map((item) => (
                 <Button
@@ -163,27 +177,29 @@ export const Dashboard = () => {
               ))}
             </Flex>
 
-            <Grid columns={2} gap={2} css={{ mt: '$6' }}>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  removeAllSelectedTracks();
-                  setAdvancedStep(1);
-                }}
-              >
-                Back
-              </Button>
-              <Button onClick={() => setAdvancedStep(3)}>
-                {selectedTracks.length === 0 ? 'Skip' : 'Next'}
-              </Button>
-            </Grid>
+            <Button css={{ mt: '$6' }} onClick={() => setAdvancedStep(3)}>
+              {selectedTracks.length === 0 ? 'Skip' : 'Next'}
+            </Button>
           </Flex>
         );
       }
       case 3: {
         return (
           <Flex direction="column" gap="2">
-            <Form>
+            <Form
+              onSubmit={async (event) => {
+                event.preventDefault();
+
+                const data = Object.fromEntries(new FormData(event.currentTarget));
+                const name = data.name as string;
+                const description = data.description as string;
+
+                const { data: top } = await getTop();
+                const pool = selectedTracks.length > 0 ? selectedTracks : top?.items;
+
+                create(pool, name, description);
+              }}
+            >
               <FormField name="name">
                 <Flex align="baseline" justify="between" css={{ mb: '$1' }}>
                   <FormLabel>Name</FormLabel>
@@ -236,9 +252,41 @@ export const Dashboard = () => {
           Welcome <b>{user.display_name}</b>!
         </Heading>
 
+        {advancedStep > 0 && (
+          <Grid columns={3} gap={2} css={{ mt: '$6' }}>
+            {steps.map((step) => (
+              <Tooltip content={step.label}>
+                <IconButton
+                  onClick={() => {
+                    if (step.value === 1) {
+                      removeAllSelectedTracks();
+                    }
+                    setAdvancedStep(step.value);
+                  }}
+                  disabled={advancedStep < step.value}
+                >
+                  <svg
+                    clip-rule="evenodd"
+                    fill-rule="evenodd"
+                    stroke-linejoin="round"
+                    stroke-miterlimit="2"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    height={8}
+                    style={{ opacity: advancedStep === step.value ? '1' : '0.2' }}
+                  >
+                    <circle cx="11.998" cy="11.998" fill-rule="nonzero" r="9.998" />
+                  </svg>
+                </IconButton>
+              </Tooltip>
+            ))}
+          </Grid>
+        )}
+
         <Box css={{ mt: '$6' }}>{renderStep(advancedStep)}</Box>
 
         <Heading css={{ mt: '$6' }}>How it works?</Heading>
+        <Paragraph css={{ mt: '$4' }}>{howItWorks}</Paragraph>
       </Flex>
     </ContentLayout>
   );

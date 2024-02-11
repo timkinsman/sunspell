@@ -17,7 +17,7 @@ const partialUser = {
 
 export const handlers = [
   http.get('https://api.spotify.com/v1/me', () => {
-    delay();
+    delay(2000);
 
     return HttpResponse.json({
       ...partialUser,
@@ -47,7 +47,9 @@ export const handlers = [
     });
   }),
   http.get('https://api.spotify.com/v1/me/top/tracks', () => {
-    delay();
+    delay(2000);
+
+    return HttpResponse.error();
 
     return HttpResponse.json({
       items: [
@@ -9283,7 +9285,7 @@ export const handlers = [
     });
   }),
   http.post(`https://api.spotify.com/v1/users/${userId}/playlists`, () => {
-    delay();
+    delay(2000);
 
     return HttpResponse.json({
       collaborative: false,
@@ -9317,7 +9319,7 @@ export const handlers = [
     });
   }),
   http.get(`https://api.spotify.com/v1/recommendations`, () => {
-    delay();
+    delay(2000);
 
     return HttpResponse.json({
       tracks: [
@@ -17855,7 +17857,7 @@ export const handlers = [
     });
   }),
   http.post(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, () => {
-    delay();
+    delay(2000);
 
     return HttpResponse.json({});
   }),
