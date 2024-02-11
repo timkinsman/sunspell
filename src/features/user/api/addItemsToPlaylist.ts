@@ -2,7 +2,7 @@ import { axios } from '@/lib/axios';
 import { useMutation } from 'react-query';
 import { MutationConfig, queryClient } from '@/lib/react-query';
 import { PlaylistObject, TrackObject } from '../types';
-import { useNotificationStore } from '@/stores/notifications';
+import { useToast } from '@nayhoo/components';
 
 export const addItemsToPlaylist = ({
   playlist_id,
@@ -23,7 +23,7 @@ type UseAddItemsToPlaylistOptions = {
 };
 
 export const useAddItemsToPlaylist = ({ config }: UseAddItemsToPlaylistOptions) => {
-  const { addNotification } = useNotificationStore();
+  const toast = useToast();
   return useMutation({
     onMutate: async ({
       playlist_id,
@@ -41,10 +41,7 @@ export const useAddItemsToPlaylist = ({ config }: UseAddItemsToPlaylistOptions) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries('addItemsToPlaylist');
-      addNotification({
-        type: 'success',
-        title: 'Tracks add to playlist',
-      });
+      toast({ title: 'Tracks add to playlist' });
     },
     ...config,
     mutationFn: addItemsToPlaylist,

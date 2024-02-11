@@ -2,7 +2,7 @@ import { axios } from '@/lib/axios';
 import { useMutation } from 'react-query';
 import { MutationConfig, queryClient } from '@/lib/react-query';
 import { PlaylistObject, UserProfile } from '../types';
-import { useNotificationStore } from '@/stores/notifications';
+import { useToast } from '@nayhoo/components';
 
 export const createPlaylist = ({
   user_id,
@@ -26,7 +26,7 @@ type UseProfileOptions = {
 };
 
 export const useCreatePlaylist = ({ config }: UseProfileOptions) => {
-  const { addNotification } = useNotificationStore();
+  const toast = useToast();
   return useMutation({
     onMutate: async ({
       user_id,
@@ -46,10 +46,7 @@ export const useCreatePlaylist = ({ config }: UseProfileOptions) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries('Create playlist');
-      addNotification({
-        type: 'success',
-        title: 'Playlist Created',
-      });
+      toast({ title: 'Playlist Created' });
     },
     ...config,
     mutationFn: createPlaylist,

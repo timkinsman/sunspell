@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { UserProfile } from '@/features/user';
 import { getProfile } from '@/features/user/api/getProfile';
-import { useNotificationStore } from '@/stores/notifications';
 import { useAuthenticationStore } from '@/features/auth/stores/authentication';
 import { refreshAccessToken } from '@/features/auth/api/refreshAccessToken';
 import { CLIENT_ID } from '@/config';
 import { useInterval } from '@/hooks/useInterval';
 import { noop } from '@/utils/noop';
+import { useToast } from '@nayhoo/components';
 
 const clientId = CLIENT_ID;
 
@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserProfile>();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { authentication, clearAuthentication } = useAuthenticationStore();
+  const toast = useToast();
 
   const logout = useCallback(() => {
     clearAuthentication();
@@ -51,16 +52,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } catch (error) {
         logout();
 
-        useNotificationStore
-          .getState()
-          .addNotification({ type: 'error', title: 'Error', message: `${error}` });
+        toast({ title: 'Error', description: `${error}` });
       } finally {
         setIsLoggingIn(false);
       }
     }
 
     getUser();
-  }, [authentication, logout]);
+  }, [authentication, logout, toast]);
 
   async function refresh(refreshToken?: string) {
     if (!refreshToken) {
@@ -70,9 +69,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await refreshAccessToken(clientId, refreshToken);
     } catch (error) {
-      useNotificationStore
-        .getState()
-        .addNotification({ type: 'error', title: 'Error', message: `${error}` });
+      toast({ title: 'Error', description: `${error}` });
     }
   }
 

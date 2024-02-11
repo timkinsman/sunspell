@@ -1,6 +1,6 @@
 import { API_URL } from '@/config';
 import { useAuthenticationStore } from '@/features/auth/stores/authentication';
-import { useNotificationStore } from '@/stores/notifications';
+import { useToast } from '@nayhoo/components';
 import Axios, { InternalAxiosRequestConfig } from 'axios';
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   const authentication = useAuthenticationStore.getState().authentication;
@@ -20,11 +20,11 @@ axios.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    const toast = useToast();
     const message = error.response?.data?.message || error.message;
-    useNotificationStore.getState().addNotification({
-      type: 'error',
+    toast({
       title: 'Error',
-      message,
+      description: message,
     });
 
     return Promise.reject(error);

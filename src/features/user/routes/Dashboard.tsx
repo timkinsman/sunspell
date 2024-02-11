@@ -7,7 +7,20 @@ import { ArtistObject, TrackObject } from '..';
 import { useCreatePlaylist } from '../api/createPlaylist';
 import { useAddItemsToPlaylist } from '../api/addItemsToPlaylist';
 import { useRecommendations } from '../api/getRecommendations';
-import { Box, Button, Flex, Grid, Heading } from '@nayhoo/components';
+import {
+  Box,
+  Button,
+  Flex,
+  Form,
+  FormControl,
+  FormField,
+  FormLabel,
+  FormSubmit,
+  Grid,
+  Heading,
+  TextArea,
+  TextField,
+} from '@nayhoo/components';
 
 const placeholder = {
   name: 'Sunspell',
@@ -36,12 +49,6 @@ export const Dashboard = () => {
     setArray: setSeedValues,
   } = useArray<ArtistObject | TrackObject>([]);
 
-  // const {
-  //   array: selectedGenres,
-  //   removeAll: removeAllSelectedGenres,
-  //   toggle: toggleSelectedGenres,
-  // } = useArray<string>([]);
-
   const {
     array: selectedTracks,
     removeAll: removeAllSelectedTracks,
@@ -53,8 +60,6 @@ export const Dashboard = () => {
     timeRange: timeRange.id as UseTopOptions['timeRange'],
   });
 
-  if (!user) return null;
-
   const { mutateAsync: createPlaylist } = useCreatePlaylist({});
   const { mutateAsync: addItemsToPlaylist } = useAddItemsToPlaylist({});
 
@@ -64,6 +69,43 @@ export const Dashboard = () => {
     config: { enabled: false },
   });
 
+  const create = async (pool: TrackObject[] = []) => {
+    try {
+      setIsLoading(true);
+
+      setSeedValues(pickRandomItems(pool, 5));
+
+      const user_id = user?.id;
+
+      if (user_id) {
+        const playlist = await createPlaylist({
+          user_id,
+          name: placeholder.name,
+          description: placeholder.description,
+        });
+
+        const { data: recommendations } = await getRecommendations();
+        const items = recommendations?.tracks;
+
+        if (items) {
+          await addItemsToPlaylist({
+            playlist_id: playlist.id,
+            uris: items.map((item) => item.uri),
+          });
+        } else {
+          throw new Error('Tracks to add does not exist!');
+        }
+      } else {
+        throw new Error('User id does not exist!');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      removeAllSeedValues();
+      setIsLoading(false);
+    }
+  };
+
   const renderStep = (step: number) => {
     switch (step) {
       case 0: {
@@ -72,44 +114,10 @@ export const Dashboard = () => {
             <Button
               loading={isLoading}
               onClick={async () => {
-                try {
-                  setIsLoading(true);
+                const { data: top } = await getTop();
+                const items = top?.items;
 
-                  const { data: top } = await getTop();
-
-                  const items = top?.items ?? [];
-
-                  setSeedValues(pickRandomItems(items, 5));
-
-                  const user_id = user?.id;
-
-                  if (user_id) {
-                    const playlist = await createPlaylist({
-                      user_id,
-                      name: placeholder.name,
-                      description: placeholder.description,
-                    });
-
-                    const { data: recommendations } = await getRecommendations();
-                    const items = recommendations?.tracks;
-
-                    if (items) {
-                      await addItemsToPlaylist({
-                        playlist_id: playlist.id,
-                        uris: items.map((item) => item.uri),
-                      });
-                    } else {
-                      throw new Error('Tracks to add does not exist!');
-                    }
-                  } else {
-                    throw new Error('User id does not exist!');
-                  }
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  removeAllSeedValues();
-                  setIsLoading(false);
-                }
+                create(items);
               }}
             >
               Simple
@@ -136,35 +144,6 @@ export const Dashboard = () => {
             ))}
           </Grid>
         );
-      }
-      case 2: {
-        // genres
-        // Accumulate unique genres
-        // const uniqueGenres: Set<string> = new Set();
-        // top?.items.forEach((item) => {
-        //   item.artists?.forEach((artist) => {
-        //     artist.genres?.forEach((genre) => {
-        //       uniqueGenres.add(genre);
-        //     });
-        //   });
-        // });
-        // // Convert the Set to an array
-        // const uniqueGenresArray: string[] = Array.from(uniqueGenres);
-        // return (
-        //   <Flex gap={2} wrap="wrap">
-        //     {uniqueGenresArray.map((genre) => (
-        //       <Button
-        //         onClick={() => {
-        //           toggleSelectedGenres(genre);
-        //         }}
-        //         variant="outline"
-        //         shape="pill"
-        //       >
-        //         {genre}
-        //       </Button>
-        //     ))}
-        //   </Flex>
-        // );
       }
       case 2: {
         // tracks
@@ -203,86 +182,31 @@ export const Dashboard = () => {
       }
       case 3: {
         return (
+          <Flex direction="column" gap="2">
+            <Form>
+              <FormField name="name">
+                <Flex align="baseline" justify="between" css={{ mb: '$1' }}>
+                  <FormLabel>Name</FormLabel>
+                </Flex>
+                <FormControl asChild>
+                  <TextField placeholder={placeholder.name} />
+                </FormControl>
+              </FormField>
+              <FormField name="description">
+                <Flex align="baseline" justify="between" css={{ mb: '$1' }}>
+                  <FormLabel>Description</FormLabel>
+                </Flex>
+                <FormControl asChild>
+                  <TextArea placeholder={placeholder.description} />
+                </FormControl>
+              </FormField>
+              <FormSubmit asChild>
+                <Button variant="default" style={{ marginTop: 10, width: '100%' }}>
+                  Create
+                </Button>
+              </FormSubmit>
+            </Form>
 
-          // <FormField name="email">
-          //     <Flex align="baseline" justify="between" css={{ mb: "$1" }}>
-          //       <FormLabel>Email</FormLabel>
-          //       <FormMessage error match="valueMissing">
-          //         Please enter your email
-          //       </FormMessage>
-          //       <FormMessage error match="typeMismatch">
-          //         Please provide a valid email
-          //       </FormMessage>
-          //     </Flex>
-          //     <FormControl asChild>
-          //       <TextField type="email" required />
-          //     </FormControl>
-          //   </FormField>
-          //   <FormField name="question">
-          //     <Flex align="baseline" justify="between" css={{ mb: "$1" }}>
-          //       <FormLabel>Question</FormLabel>
-          //       <FormMessage error match="valueMissing">
-          //         Please enter a question
-          //       </FormMessage>
-          //     </Flex>
-          //     <FormControl asChild>
-          //       <TextArea required />
-          //     </FormControl>
-          //   </FormField>
-          //   <FormSubmit asChild>
-          //     <Button style={{ marginTop: 10 }}>Post question</Button>
-          //   </FormSubmit>
-          <Grid columns={1} gap={2}>
-            <Button
-              loading={isLoading}
-              onClick={async () => {
-                try {
-                  setIsLoading(true);
-
-                  const { data: top } = await getTop();
-
-                  const items = top?.items ?? [];
-
-                  const selectedSeedValues = pickRandomItems(
-                    selectedTracks.length > 0 ? selectedTracks : items,
-                    5
-                  );
-
-                  setSeedValues(selectedSeedValues);
-
-                  const user_id = user?.id;
-
-                  if (user_id) {
-                    const playlist = await createPlaylist({
-                      user_id,
-                      name: placeholder.name,
-                      description: placeholder.description,
-                    });
-
-                    const { data: recommendations } = await getRecommendations();
-                    const items = recommendations?.tracks;
-
-                    if (items) {
-                      await addItemsToPlaylist({
-                        playlist_id: playlist.id,
-                        uris: items.map((item) => item.uri),
-                      });
-                    } else {
-                      throw new Error('Tracks to add does not exist!');
-                    }
-                  } else {
-                    throw new Error('User id does not exist!');
-                  }
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  removeAllSeedValues();
-                  setIsLoading(false);
-                }
-              }}
-            >
-              Create
-            </Button>
             <Button
               variant="outline"
               onClick={() => {
@@ -294,7 +218,7 @@ export const Dashboard = () => {
             >
               Re-roll ({remainingRolls})
             </Button>
-          </Grid>
+          </Flex>
         );
       }
       default: {
@@ -303,10 +227,12 @@ export const Dashboard = () => {
     }
   };
 
+  if (!user) return null;
+
   return (
     <ContentLayout title="Dashboard">
       <Flex align="center" direction="column">
-        <Heading className="mt-2">
+        <Heading css={{ mt: '$6' }}>
           Welcome <b>{user.display_name}</b>!
         </Heading>
 

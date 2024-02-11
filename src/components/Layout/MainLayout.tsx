@@ -1,16 +1,15 @@
-import { Menu, Transition } from '@headlessui/react';
-import clsx from 'clsx';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 import { useAuth } from '@/hooks/useAuth';
 import {
   Avatar,
+  Box,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Flex,
   Heading,
   Text,
 } from '@nayhoo/components';
@@ -72,22 +71,21 @@ type MainLayoutProps = {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-100">
-      <div className="flex flex-col w-0 flex-1 overflow-hidden">
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
-          <div className="flex-1 px-4 flex justify-start">
-            <div className="flex items-center">
-              <Heading>Sunspell</Heading>
-            </div>
-          </div>
-          <div className="flex-1 px-4 flex justify-end">
-            <div className="flex items-center">
-              <UserNavigation />
-            </div>
-          </div>
-        </div>
-        <main className="flex-1 relative overflow-y-auto focus:outline-none">{children}</main>
-      </div>
-    </div>
+    <Box css={{ height: '100vh', backgroundColor: 'rgb(243 244 246)' }}>
+      <Flex direction="column" css={{ flex: '1 1 0%' }}>
+        <Flex as="nav" css={{ backgroundColor: '#ffffff', zIndex: '$1', height: '$8' }}>
+          <Flex css={{ flex: '1 1 0%', px: '$4' }} justify="start" align="center">
+            <Heading>Sunspell</Heading>
+          </Flex>
+          <Flex css={{ flex: '1 1 0%', px: '$4' }} justify="end" align="center">
+            <UserNavigation />
+          </Flex>
+        </Flex>
+
+        <Box as="main" css={{ flex: '1 1 0%', position: 'relative' }}>
+          {children}
+        </Box>
+      </Flex>
+    </Box>
   );
 };
