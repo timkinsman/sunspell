@@ -22,16 +22,16 @@ export const usePlaylist = () => {
     setArray: setSeedValues,
   } = useArray<ArtistObject | TrackObject>([]);
 
-  const { mutateAsync: createPlaylistMutation } = useCreatePlaylist({});
-  const { mutateAsync: addItemsToPlaylistMutation } = useAddItemsToPlaylist({});
+  const { mutateAsync: createPlaylist } = useCreatePlaylist({});
+  const { mutateAsync: addItemsToPlaylist } = useAddItemsToPlaylist({});
 
-  const { refetch: getRecommendationsQuery } = useRecommendations({
+  const { refetch: getRecommendations } = useRecommendations({
     limit: 20,
     seed_values: seedValues,
     config: { enabled: false },
   });
 
-  const createPlaylist = async (
+  const trigger = async (
     pool: TrackObject[] = [],
     name = placeholder.name,
     description = placeholder.description
@@ -43,7 +43,7 @@ export const usePlaylist = () => {
       const user_id = user?.id;
 
       if (user_id) {
-        const playlist = await createPlaylistMutation({
+        const playlist = await createPlaylist({
           user_id,
           name: name.length > 0 ? name : placeholder.name,
           description: description.length > 0 ? description : placeholder.description,
@@ -51,11 +51,11 @@ export const usePlaylist = () => {
 
         setData(playlist);
 
-        const { data: recommendations } = await getRecommendationsQuery();
+        const { data: recommendations } = await getRecommendations();
         const items = recommendations?.tracks;
 
         if (items) {
-          await addItemsToPlaylistMutation({
+          await addItemsToPlaylist({
             playlist_id: playlist.id,
             uris: items.map((item) => item.uri),
           });
@@ -74,5 +74,5 @@ export const usePlaylist = () => {
     }
   };
 
-  return [createPlaylist, { data, error, isError, isLoading }] as const;
+  return [trigger, { data, error, isError, isLoading }] as const;
 };

@@ -5,6 +5,10 @@ import { useState } from 'react';
 import { useArray } from '@/hooks/useArray';
 import { TrackObject } from '..';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Box,
   Button,
   Flex,
@@ -17,6 +21,7 @@ import {
   Heading,
   IconButton,
   Paragraph,
+  Spinner,
   TextArea,
   TextField,
   Tooltip,
@@ -30,7 +35,7 @@ export const Dashboard = () => {
 
   const [timeRange, setTimeRange] = useState(timeRanges[2]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [createPlaylist, { isLoading }] = usePlaylist();
+  const [createPlaylist, { data: playlist, isLoading }] = usePlaylist();
 
   const {
     array: selectedTracks,
@@ -38,21 +43,36 @@ export const Dashboard = () => {
     toggle: toggleSelectedTracks,
   } = useArray<TrackObject>([]);
 
-  const { refetch: getTop, data: top } = useTop({
+  const {
+    refetch: getTop,
+    data: top,
+    isFetching,
+  } = useTop({
     type: 'tracks',
     timeRange: timeRange.id as UseTopOptions['timeRange'],
   });
 
   if (!user) return null;
 
+  const groupedTracksByArtist =
+    top?.items.reduce<Record<string, TrackObject[]>>((acc, track) => {
+      const key = track.artists[0].name;
+      if (acc[key]) {
+        acc[key].push(track);
+      } else {
+        acc[key] = [track];
+      }
+      return acc;
+    }, {}) ?? {};
+
   const steps = [
     {
       title: 'Welcome!',
-      summary: 'To get started select an option bellow!',
+      summary: 'To get started select an option below!',
       tooltip: '',
       value: 0,
       Element: (
-        <Grid columns={2} gap={2}>
+        <Grid columns={1} gap={2} css={{ '@bp1': { gridCols: 2 } }}>
           <Tooltip delayDuration={60} content="Let Sunspell do all the work!">
             <Button
               loading={isLoading}
@@ -77,11 +97,11 @@ export const Dashboard = () => {
     },
     {
       title: 'Select a time period',
-      summary: '',
+      summary: 'This will determine the tracks to choose from',
       tooltip: '',
       value: 1,
       Element: (
-        <Grid columns={3} gap={2}>
+        <Grid columns={1} gap={2} css={{ '@bp1': { gridCols: 3 } }}>
           {timeRanges.map((tr) => (
             <Button
               onClick={() => {
@@ -97,42 +117,67 @@ export const Dashboard = () => {
     },
     {
       title: 'Select from a pool of tracks',
-      summary: '',
+      summary: 'This will shape the spell',
       tooltip: '',
       value: 2,
       Element: (
         <Flex direction="column" align="center">
-          <Flex gap={2} wrap="wrap">
-            {top?.items
-              .sort((a, b) => {
-                const nameA = a.artists[0].name.toLowerCase();
-                const nameB = b.artists[0].name.toLowerCase();
-                if (nameA < nameB) return -1;
-                if (nameA > nameB) return 1;
-                return 0; // names must be equal
-              })
-              .map((item) => (
-                <Button
-                  onClick={() => {
-                    toggleSelectedTracks(item);
-                  }}
-                  variant={selectedTracks.includes(item) ? 'default' : 'outline'}
-                  shape="pill"
-                >
-                  {item.artists[0]?.name} - {item.name}
-                </Button>
-              ))}
-          </Flex>
-
-          <Button css={{ mt: '$6' }} onClick={() => setCurrentStep(3)}>
+          <Button onClick={() => setCurrentStep(3)}>
             {selectedTracks.length === 0 ? 'Skip' : 'Next'}
           </Button>
+
+          <Box css={{ width: '100%', mt: '$6' }}>
+            {isFetching ? (
+              <Spinner />
+            ) : (
+              <Accordion type="multiple" css={{ width: '100%' }}>
+                {Object.entries(groupedTracksByArtist).map(([artistName, tracks]) => {
+                  const numOfSelectedTracksByArtist = tracks.filter((track) =>
+                    selectedTracks.includes(track)
+                  ).length;
+
+                  return (
+                    <AccordionItem value={artistName}>
+                      <AccordionTrigger>
+                        {`${artistName} ${
+                          numOfSelectedTracksByArtist > 0 ? `(${numOfSelectedTracksByArtist})` : ''
+                        }`}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Flex gap={2} wrap="wrap">
+                          {tracks
+                            .sort((a, b) => {
+                              const nameA = a.artists[0].name.toLowerCase();
+                              const nameB = b.artists[0].name.toLowerCase();
+                              if (nameA < nameB) return -1;
+                              if (nameA > nameB) return 1;
+                              return 0; // names must be equal
+                            })
+                            .map((item) => (
+                              <Button
+                                onClick={() => {
+                                  toggleSelectedTracks(item);
+                                }}
+                                variant={selectedTracks.includes(item) ? 'default' : 'outline'}
+                                shape="pill"
+                              >
+                                {item.name}
+                              </Button>
+                            ))}
+                        </Flex>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
+            )}
+          </Box>
         </Flex>
       ),
     },
     {
       title: 'Finalise the spell!',
-      summary: '',
+      summary: 'Enter the final details',
       tooltip: '',
       value: 3,
       Element: (
@@ -182,7 +227,7 @@ export const Dashboard = () => {
     },
     {
       title: 'Success!',
-      summary: '',
+      summary: 'Congratulations! It should appear',
       tooltip: '',
       value: 4,
       Element: (
@@ -195,6 +240,14 @@ export const Dashboard = () => {
           >
             Start again
           </Button>
+          <Button
+            disabled={!playlist}
+            onClick={() => {
+              window.open(playlist?.uri, '_blank');
+            }}
+          >
+            View
+          </Button>
         </Grid>
       ),
     },
@@ -206,8 +259,7 @@ export const Dashboard = () => {
     <ContentLayout title="Dashboard">
       <Flex align="center" direction="column">
         <Heading css={{ mt: '$6' }}>{activeStep.title}</Heading>
-
-        {currentStep === 0 && <Paragraph css={{ mt: '$2' }}>{activeStep.summary}</Paragraph>}
+        <Paragraph css={{ mt: '$2' }}>{activeStep.summary}</Paragraph>
 
         {currentStep > 0 && (
           <Grid gap={2} css={{ gridCols: 5, mt: '$6' }}>
@@ -240,7 +292,7 @@ export const Dashboard = () => {
           </Grid>
         )}
 
-        <Box css={{ mt: '$6' }}>{activeStep.Element}</Box>
+        <Box css={{ mt: '$6', width: '100%' }}>{activeStep.Element}</Box>
 
         <Heading css={{ mt: '$6' }}>How it works?</Heading>
         <Paragraph css={{ mt: '$4' }}>{howItWorks}</Paragraph>

@@ -72,7 +72,7 @@ type MainLayoutProps = {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <Box css={{ height: '100vh', backgroundColor: 'rgb(243 244 246)' }}>
+    <Box css={{ height: '100vh' }}>
       <Flex direction="column" css={{ flex: '1 1 0%', minHeight: '100vh' }}>
         <Flex as="nav" css={{ backgroundColor: '#ffffff', zIndex: '$1', height: '$8' }}>
           <Flex css={{ flex: '1 1 0%', px: '$4' }} justify="start" align="center">

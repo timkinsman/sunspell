@@ -17,7 +17,7 @@ export const Landing = () => {
     <>
       <Head description={`Welcome to sunspell`} />
       <Flex align="center" css={{ height: '100vh' }}>
-        <Container size="3" css={{ px: '$2' }}>
+        <Container size="3" css={{ px: '$2', textAlign: 'center' }}>
           <Heading size="3">sunspell</Heading>
 
           <Flex justify="center" css={{ mt: '$4' }}>
