@@ -127,8 +127,8 @@ export const Dashboard = () => {
           </Button>
 
           <Box css={{ width: '100%', mt: '$6' }}>
-            {isFetching ? (
-              <Spinner />
+            {!isFetching ? (
+              <Spinner css={{ m: 'auto' }} />
             ) : (
               <Accordion type="multiple" css={{ width: '100%' }}>
                 {Object.entries(groupedTracksByArtist).map(([artistName, tracks]) => {
