@@ -49,7 +49,7 @@ export const handlers = [
   http.get('https://api.spotify.com/v1/me/top/tracks', () => {
     delay(2000);
 
-    return HttpResponse.error();
+    // return HttpResponse.error();
 
     return HttpResponse.json({
       items: [

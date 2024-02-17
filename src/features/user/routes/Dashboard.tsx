@@ -27,8 +27,8 @@ import {
 import { howItWorks } from '@/constants';
 
 const placeholder = {
-  name: 'Sunspell',
-  description: 'Created',
+  name: `Sunspell ${new Date().toLocaleDateString()}`,
+  description: '🌞✨🔮',
 };
 
 const timeRanges = [
@@ -48,7 +48,7 @@ export const Dashboard = () => {
   const [timeRange, setTimeRange] = useState(timeRanges[2]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [remainingRolls, setRemainingRolls] = useState(3);
+  // const [remainingRolls, setRemainingRolls] = useState(3);
 
   const [advancedStep, setAdvancedStep] = useState(0);
 
@@ -223,7 +223,7 @@ export const Dashboard = () => {
               </FormSubmit>
             </Form>
 
-            <Button
+            {/* <Button
               variant="outline"
               onClick={() => {
                 setRemainingRolls(remainingRolls - 1);
@@ -233,7 +233,7 @@ export const Dashboard = () => {
               disabled={remainingRolls <= 0}
             >
               Re-roll ({remainingRolls})
-            </Button>
+            </Button> */}
           </Flex>
         );
       }
