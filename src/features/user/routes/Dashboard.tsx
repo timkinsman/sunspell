@@ -50,7 +50,7 @@ export const Dashboard = () => {
 
   // const [remainingRolls, setRemainingRolls] = useState(3);
 
-  const [advancedStep, setAdvancedStep] = useState(0);
+  const [currentStep, setAdvancedStep] = useState(0);
 
   const {
     array: seedValues,
@@ -73,7 +73,7 @@ export const Dashboard = () => {
   const { mutateAsync: createPlaylist } = useCreatePlaylist({});
   const { mutateAsync: addItemsToPlaylist } = useAddItemsToPlaylist({});
 
-  const { refetch: getRecommendations, isFetching } = useRecommendations({
+  const { refetch: getRecommendations } = useRecommendations({
     limit: 20,
     seed_values: seedValues,
     config: { enabled: false },
@@ -125,20 +125,25 @@ export const Dashboard = () => {
       case 0: {
         return (
           <Grid columns={2} gap={2}>
-            <Button
-              loading={isLoading}
-              onClick={async () => {
-                const { data: top } = await getTop();
-                const items = top?.items;
+            <Tooltip delayDuration={60} content="Let Sunspell do all the work!">
+              <Button
+                loading={isLoading}
+                onClick={async () => {
+                  const { data: top } = await getTop();
+                  const items = top?.items;
 
-                create(items);
-              }}
-            >
-              Simple
-            </Button>
-            <Button onClick={() => setAdvancedStep(1)} disabled={isLoading}>
-              Advanced
-            </Button>
+                  create(items);
+                }}
+              >
+                Simple
+              </Button>
+            </Tooltip>
+
+            <Tooltip delayDuration={60} content="Craft a spell!">
+              <Button onClick={() => setAdvancedStep(1)} disabled={isLoading}>
+                Advanced
+              </Button>
+            </Tooltip>
           </Grid>
         );
       }
@@ -164,17 +169,25 @@ export const Dashboard = () => {
         return (
           <Flex direction="column" align="center">
             <Flex gap={2} wrap="wrap">
-              {top?.items.map((item) => (
-                <Button
-                  onClick={() => {
-                    toggleSelectedTracks(item);
-                  }}
-                  variant={selectedTracks.includes(item) ? 'default' : 'outline'}
-                  shape="pill"
-                >
-                  {item.name}
-                </Button>
-              ))}
+              {top?.items
+                .sort((a, b) => {
+                  const nameA = a.artists[0].name.toLowerCase();
+                  const nameB = b.artists[0].name.toLowerCase();
+                  if (nameA < nameB) return -1;
+                  if (nameA > nameB) return 1;
+                  return 0; // names must be equal
+                })
+                .map((item) => (
+                  <Button
+                    onClick={() => {
+                      toggleSelectedTracks(item);
+                    }}
+                    variant={selectedTracks.includes(item) ? 'default' : 'outline'}
+                    shape="pill"
+                  >
+                    {item.artists[0]?.name} - {item.name}
+                  </Button>
+                ))}
             </Flex>
 
             <Button css={{ mt: '$6' }} onClick={() => setAdvancedStep(3)}>
@@ -245,14 +258,33 @@ export const Dashboard = () => {
 
   if (!user) return null;
 
+  const renderTitle = (step: number) => {
+    switch (step) {
+      case 0: {
+        return `Welcome ${user.display_name}!`;
+      }
+      case 1: {
+        return `Select a time period`;
+      }
+      case 2: {
+        return `Select from a pool of tracks`;
+      }
+      case 3: {
+        return `Finalise the spell!`;
+      }
+    }
+  };
+
   return (
     <ContentLayout title="Dashboard">
       <Flex align="center" direction="column">
-        <Heading css={{ mt: '$6' }}>
-          Welcome <b>{user.display_name}</b>!
-        </Heading>
+        <Heading css={{ mt: '$6' }}>{renderTitle(currentStep)}</Heading>
 
-        {advancedStep > 0 && (
+        {currentStep === 0 && (
+          <Paragraph css={{ mt: '$2' }}>To get started select an option bellow!</Paragraph>
+        )}
+
+        {currentStep > 0 && (
           <Grid columns={3} gap={2} css={{ mt: '$6' }}>
             {steps.map((step) => (
               <Tooltip content={step.label}>
@@ -263,7 +295,7 @@ export const Dashboard = () => {
                     }
                     setAdvancedStep(step.value);
                   }}
-                  disabled={advancedStep < step.value}
+                  disabled={currentStep < step.value}
                 >
                   <svg
                     clip-rule="evenodd"
@@ -273,7 +305,7 @@ export const Dashboard = () => {
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                     height={8}
-                    style={{ opacity: advancedStep === step.value ? '1' : '0.2' }}
+                    style={{ opacity: currentStep === step.value ? '1' : '0.2' }}
                   >
                     <circle cx="11.998" cy="11.998" fill-rule="nonzero" r="9.998" />
                   </svg>
@@ -283,7 +315,7 @@ export const Dashboard = () => {
           </Grid>
         )}
 
-        <Box css={{ mt: '$6' }}>{renderStep(advancedStep)}</Box>
+        <Box css={{ mt: '$6' }}>{renderStep(currentStep)}</Box>
 
         <Heading css={{ mt: '$6' }}>How it works?</Heading>
         <Paragraph css={{ mt: '$4' }}>{howItWorks}</Paragraph>

@@ -48,6 +48,7 @@ const UserNavigation = () => {
             alt={`${username}'s Spotify profile picture`}
             css={{ mr: '$2' }}
             fallback={username?.[0]}
+            size="2"
             src={user?.images[0].url}
           />
           <Text>{username}</Text>
@@ -82,9 +83,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           </Flex>
         </Flex>
 
-        <Box as="main" css={{ flex: '1 1 0%', position: 'relative' }}>
+        <Flex as="main" css={{ flex: '1 1 0%', position: 'relative' }} direction="column">
           {children}
-        </Box>
+        </Flex>
       </Flex>
     </Box>
   );
