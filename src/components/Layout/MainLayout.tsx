@@ -11,7 +11,7 @@ import {
   Flex,
   Separator,
 } from '@nayhoo/components';
-import { ThemeIconButton } from '@/features/theme/components/ThemeIconButton';
+import { ThemeIconButton } from '@/features/theme';
 
 type UserNavigationItem = {
   name: string;

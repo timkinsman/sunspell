@@ -1,1 +1,1 @@
-export * from './components/ThemeDropdownMenuItem';
+export * from './components/ThemeIconButton';
