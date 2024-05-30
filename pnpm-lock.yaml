@@ -21,10 +21,10 @@ importers:
         specifier: ^5.0.5
         version: 5.0.7
       react:
-        specifier: ^18.2.0
+        specifier: ~18.2.0
         version: 18.2.0
       react-dom:
-        specifier: ^18.2.0
+        specifier: ~18.2.0
         version: 18.2.0(react@18.2.0)
       react-error-boundary:
         specifier: ^4.0.11
