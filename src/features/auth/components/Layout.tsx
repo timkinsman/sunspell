@@ -16,11 +16,11 @@ export const Layout = ({ children, title }: LayoutProps) => {
         align="center"
         justify="center"
         direction="column"
-        css={{ minHeight: '100vh', backgroundColor: 'rgb(249 250 251)', py: '$4', px: '$4' }}
+        css={{ minHeight: '100vh', py: '$4', px: '$4' }}
       >
         <Heading size="3">{title}</Heading>
 
-        <Box css={{ backgroundColor: '#ffffff', mt: '$4' }}>{children}</Box>
+        <Box css={{ mt: '$4' }}>{children}</Box>
       </Flex>
     </>
   );

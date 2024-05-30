@@ -5,16 +5,18 @@ import { Box, Container, Flex, Link, Text } from '@nayhoo/components';
 
 const Footer = () => {
   return (
-    <Flex align="center" justify="between" as="footer" css={{ px: '$4', height: '$8', mt: 'auto' }} wrap='wrap'>
-      <Text>
+    <Flex align="center" justify="between" as="footer" css={{ p: '$2', mt: 'auto' }} wrap="wrap">
+      <Text size="2">
         Developed by{' '}
         <Link href="https://github.com/timkinsman" target="_blank">
           Tim Kinsman
         </Link>
       </Text>
-      <Link href="https://github.com/timkinsman/sunspell" target="_blank">
-        Source code
-      </Link>
+      <Text size="2">
+        <Link href="https://github.com/timkinsman/sunspell" target="_blank">
+          Source code
+        </Link>
+      </Text>
     </Flex>
   );
 };
@@ -29,7 +31,7 @@ export const ContentLayout = ({ children, title }: ContentLayoutProps) => {
     <>
       <Head title={title} />
       <Box css={{ py: '$6' }}>
-        <Container size="1" css={{ px: '$2' }}>
+        <Container size="2" css={{ px: '$2' }}>
           {children}
         </Container>
       </Box>

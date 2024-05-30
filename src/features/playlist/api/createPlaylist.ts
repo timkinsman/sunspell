@@ -1,8 +1,9 @@
 import { axios } from '@/lib/axios';
 import { useMutation } from 'react-query';
 import { MutationConfig, queryClient } from '@/lib/react-query';
-import { PlaylistObject, UserProfile } from '../types';
-import { useToast } from '@nayhoo/components';
+import { PlaylistObject } from '../types';
+import { UserProfile } from '@/features/user/types';
+// import { useToast } from '@nayhoo/components';
 
 export const createPlaylist = ({
   user_id,
@@ -26,7 +27,7 @@ type UseProfileOptions = {
 };
 
 export const useCreatePlaylist = ({ config }: UseProfileOptions) => {
-  const toast = useToast();
+  // const toast = useToast();
   return useMutation({
     onMutate: async ({
       user_id,
@@ -46,7 +47,7 @@ export const useCreatePlaylist = ({ config }: UseProfileOptions) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries('Create playlist');
-      toast({ title: 'Playlist Created' });
+      // toast({ title: 'Playlist Created' });
     },
     ...config,
     mutationFn: createPlaylist,

@@ -4,7 +4,12 @@ export const placeholder = {
 };
 
 export const timeRanges = [
-  { id: 'long_term', name: 'Lifetime' },
-  { id: 'medium_term', name: 'Last 6 months' },
-  { id: 'short_term', name: 'Last 4 weeks' },
+  { id: 'long_term', name: 'of all-time' },
+  { id: 'medium_term', name: 'in the last 6 months' },
+  { id: 'short_term', name: 'in the last 4 weeks' },
+];
+
+export const types = [
+  { id: 'artists', name: 'artists' },
+  { id: 'tracks', name: 'tracks' },
 ];

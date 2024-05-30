@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { UserProfile } from '@/features/user';
 import { getProfile } from '@/features/user/api/getProfile';
 import { useAuthenticationStore } from '@/features/auth/stores/authentication';
 import { refreshAccessToken } from '@/features/auth/api/refreshAccessToken';
@@ -7,6 +6,7 @@ import { CLIENT_ID } from '@/config';
 import { useInterval } from '@/hooks/useInterval';
 import { noop } from '@/utils/noop';
 import { useToast } from '@nayhoo/components';
+import { UserProfile } from '@/features/user/types';
 
 const clientId = CLIENT_ID;
 

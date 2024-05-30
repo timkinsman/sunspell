@@ -1,8 +1,9 @@
 import { axios } from '@/lib/axios';
 import { useMutation } from 'react-query';
 import { MutationConfig, queryClient } from '@/lib/react-query';
-import { PlaylistObject, TrackObject } from '../types';
-import { useToast } from '@nayhoo/components';
+import { PlaylistObject } from '../types';
+import { TrackObject } from '@/types';
+// import { useToast } from '@nayhoo/components';
 
 export const addItemsToPlaylist = ({
   playlist_id,
@@ -23,7 +24,7 @@ type UseAddItemsToPlaylistOptions = {
 };
 
 export const useAddItemsToPlaylist = ({ config }: UseAddItemsToPlaylistOptions) => {
-  const toast = useToast();
+  // const toast = useToast();
   return useMutation({
     onMutate: async ({
       playlist_id,
@@ -41,7 +42,7 @@ export const useAddItemsToPlaylist = ({ config }: UseAddItemsToPlaylistOptions) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries('addItemsToPlaylist');
-      toast({ title: 'Tracks add to playlist' });
+      // toast({ title: 'Success!', description: 'Tracks added' });
     },
     ...config,
     mutationFn: addItemsToPlaylist,

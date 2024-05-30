@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { ArtistObject, PlaylistObject, TrackObject } from '../types';
-import { placeholder } from '../utils';
+import { PlaylistObject } from '../types';
+import { placeholder } from '../../user/utils';
 import { useRecommendations } from '../api/getRecommendations';
 import { useCreatePlaylist } from '../api/createPlaylist';
 import { useAddItemsToPlaylist } from '../api/addItemsToPlaylist';
 import { useArray } from '@/hooks/useArray';
 import { useAuth } from '@/hooks/useAuth';
 import { pickRandomItems } from '@/utils/pickRandomItems';
+import { ArtistObject, TrackObject } from '@/types';
 
 export const usePlaylist = () => {
   const { user } = useAuth();
@@ -32,10 +33,10 @@ export const usePlaylist = () => {
   });
 
   const trigger = async (
-    pool: TrackObject[] = [],
+    pool: (ArtistObject | TrackObject)[] = [],
     name = placeholder.name,
     description = placeholder.description
-  ) => {
+  ): Promise<PlaylistObject> => {
     try {
       setIsLoading(true);
       setSeedValues(pickRandomItems(pool, 5));
@@ -49,8 +50,6 @@ export const usePlaylist = () => {
           description: description.length > 0 ? description : placeholder.description,
         });
 
-        setData(playlist);
-
         const { data: recommendations } = await getRecommendations();
         const items = recommendations?.tracks;
 
@@ -62,12 +61,17 @@ export const usePlaylist = () => {
         } else {
           throw new Error('Tracks to add does not exist!');
         }
+
+        setData(playlist);
+        return playlist;
       } else {
         throw new Error('User id does not exist!');
       }
     } catch (error) {
       setError(`${error}`);
       setIsError(true);
+
+      throw error;
     } finally {
       removeAllSeedValues();
       setIsLoading(false);

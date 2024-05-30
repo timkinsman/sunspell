@@ -1,7 +1,7 @@
 import { axios } from '@/lib/axios';
 import { useQuery } from 'react-query';
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query';
-import { ArtistObject, TrackObject } from '../types';
+import { ArtistObject, TrackObject } from '@/types';
 
 type RecommendationSeedObject = {
   afterFilteringSize: number;
