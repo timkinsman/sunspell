@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
-import { Spinner } from '@/components/Elements';
 import { MainLayout } from '@/components/Layout';
 import { lazyImport } from '@/utils/lazyImport';
+import { Flex, Spinner } from '@nayhoo/components';
 
 const { Dashboard } = lazyImport(() => import('@/features/user'), 'Dashboard');
 
@@ -13,9 +13,14 @@ const App = () => {
     <MainLayout>
       <Suspense
         fallback={
-          <div className="h-full w-full flex items-center justify-center">
-            <Spinner size="xl" />
-          </div>
+          <Flex
+            direction="column"
+            justify="center"
+            align="center"
+            css={{ height: '100vh', width: '100vw' }}
+          >
+            <Spinner />
+          </Flex>
         }
       >
         <Outlet />

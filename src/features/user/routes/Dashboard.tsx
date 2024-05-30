@@ -2,111 +2,166 @@ import { ContentLayout } from '@/components/Layout';
 import { UseTopOptions, useTop } from '../api/getTop';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
-import { Button } from '@/components/Elements';
-import { useArray } from '@/hooks/useArray';
-import { ArtistObject, TrackObject } from '..';
-import { useCreatePlaylist } from '../api/createPlaylist';
-import { useAddItemsToPlaylist } from '../api/addItemsToPlaylist';
-import { useRecommendations } from '../api/getRecommendations';
-
-const placeholder = {
-  name: 'Sunspell',
-  description: 'Created',
-};
-
-const timeRanges = [
-  { id: 'long_term', name: 'Lifetime' },
-  { id: 'medium_term', name: 'Last 6 months' },
-  { id: 'short_term', name: 'Last 4 weeks' },
-] as const;
+import {
+  AspectRatio,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Flex,
+  Grid,
+  Heading,
+  Image,
+  Link,
+  Skeleton,
+  Text,
+  ToastAction,
+  useToast,
+} from '@nayhoo/components';
+import { timeRanges, types } from '../utils';
+import { usePlaylist } from '@/features/playlist/hooks/usePlaylist';
 
 export const Dashboard = () => {
   const { user } = useAuth();
+  const toast = useToast();
+
+  const [type, setType] = useState(types[1]);
   const [timeRange, setTimeRange] = useState(timeRanges[2]);
-  const [isLoading, setIsLoading] = useState(false);
 
   const {
-    array: seedValues,
-    removeAll: removeAllSeedValues,
-    // toggle: toggleSeedValues,
-    setArray: setSeedValues,
-  } = useArray<ArtistObject | TrackObject>([]);
-
-  const { refetch: getTop } = useTop({
-    type: 'tracks',
+    data: top,
+    isFetching,
+    isSuccess,
+  } = useTop({
+    type: type.id as UseTopOptions['type'],
     timeRange: timeRange.id as UseTopOptions['timeRange'],
-    config: { enabled: false },
   });
+
+  const [createPlaylist, { isLoading }] = usePlaylist();
 
   if (!user) return null;
 
-  const { mutateAsync: createPlaylist } = useCreatePlaylist({});
-  const { mutateAsync: addItemsToPlaylist } = useAddItemsToPlaylist({});
-
-  const { refetch: getRecommendations } = useRecommendations({
-    limit: 20,
-    seed_values: seedValues,
-    config: { enabled: false },
-  });
-
   return (
     <ContentLayout title="Dashboard">
-      <div className="flex items-center flex-col">
-        <h1 className="text-xl mt-2">
-          Welcome <b>{user.display_name}</b>!
-        </h1>
-        <div>
-          <div className="grid gap-2 mt-8 grid-cols-2">
-            <Button
-              isLoading={isLoading}
-              onClick={async () => {
-                try {
-                  setIsLoading(true);
+      <Flex justify="between" wrap="wrap" gap="2" css={{ mb: '$4' }}>
+        <Heading>
+          Your most listened to{' '}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Text css={{ fontSize: 'inherit', textDecoration: 'underline', cursor: 'pointer' }}>
+                {type.name}
+              </Text>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent css={{ zIndex: '$1' }}>
+              {types.map((item) => (
+                <DropdownMenuItem key={item.name} onClick={() => setType(item)}>
+                  {item.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>{' '}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Text css={{ fontSize: 'inherit', textDecoration: 'underline', cursor: 'pointer' }}>
+                {timeRange.name}
+              </Text>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent css={{ zIndex: '$1' }}>
+              {timeRanges.map((item) => (
+                <DropdownMenuItem key={item.name} onClick={() => setTimeRange(item)}>
+                  {item.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Heading>
 
-                  const { data: top } = await getTop();
-                  const items = top?.items?.slice(0, 5);
+        <Button
+          disabled={!isSuccess}
+          size="1"
+          variant="outline"
+          loading={isLoading}
+          onClick={() =>
+            createPlaylist(top?.items).then((playlist) =>
+              toast({
+                title: 'Success ☀️🪄',
+                description: 'View the curated songs now!',
+                action: (
+                  <Flex gap="1">
+                    <ToastAction altText="Goto schedule to undo" asChild>
+                      <Button size="1" variant="outline">
+                        Later :)
+                      </Button>
+                    </ToastAction>
 
-                  setSeedValues(items ?? []);
+                    <ToastAction altText="Goto schedule to undo" asChild>
+                      <Button size="1" onClick={() => window.open(playlist.uri)}>
+                        View
+                      </Button>
+                    </ToastAction>
+                  </Flex>
+                ),
+              })
+            )
+          }
+        >
+          Create ☀️🪄
+        </Button>
+      </Flex>
 
-                  const user_id = user?.id;
+      <Grid
+        columns={{ '@initial': 2, '@bp1': 4 }}
+        gap={{ '@initial': '2', '@bp1': '3', '@bp2': '4' }}
+      >
+        {isFetching &&
+          Array(20)
+            .fill(0)
+            .map(() => (
+              <AspectRatio ratio={1}>
+                <Skeleton css={{ height: '100%' }} />
+              </AspectRatio>
+            ))}
 
-                  if (user_id) {
-                    const playlist = await createPlaylist({
-                      user_id,
-                      name: placeholder.name,
-                      description: placeholder.description,
-                    });
-
-                    const { data: recommendations } = await getRecommendations();
-                    const items = recommendations?.tracks;
-
-                    if (items) {
-                      await addItemsToPlaylist({
-                        playlist_id: playlist.id,
-                        uris: items.map((item) => item.uri),
-                      });
-                    } else {
-                      throw new Error('Tracks to add does not exist!');
-                    }
-                  } else {
-                    throw new Error('User id does not exist!');
-                  }
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  removeAllSeedValues();
-                  setIsLoading(false);
-                }
-              }}
-            >
-              Simple
-            </Button>
-            <Button disabled={isLoading}>Advanced</Button>
-          </div>
-        </div>
-
-        <h1 className="text-xl mt-2 mt-8">How it works?</h1>
-      </div>
+        {isSuccess &&
+          top?.items.map((item) => (
+            <Flex gap="2" direction="column">
+              <AspectRatio ratio={1}>
+                <Flex
+                  align="center"
+                  justify="center"
+                  css={{
+                    backgroundColor: '#000',
+                    height: '100%',
+                    width: '100%',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Image
+                    src={item.type === 'track' ? item.album.images[0].url : item.images[0].url}
+                  />
+                </Flex>
+              </AspectRatio>
+              <Flex direction="column" align="center" justify="start" gap="1">
+                {item.type === 'track' && (
+                  <Text size="2" css={{ textAlign: 'center' }}>
+                    {item.artists[0].name}
+                  </Text>
+                )}
+                <Text
+                  size="1"
+                  css={{
+                    color: '$textLabel',
+                    lineHeight: '1.25rem',
+                    textAlign: 'center',
+                  }}
+                >
+                  <Link href={item.uri}>{item.name}</Link>
+                </Text>
+              </Flex>
+            </Flex>
+          ))}
+      </Grid>
     </ContentLayout>
   );
 };
