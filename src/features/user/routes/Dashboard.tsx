@@ -17,6 +17,7 @@ import {
   Skeleton,
   Text,
   ToastAction,
+  Tooltip,
   useToast,
 } from '@nayhoo/components';
 import { timeRanges, types } from '../utils';
@@ -44,7 +45,7 @@ export const Dashboard = () => {
 
   return (
     <ContentLayout title="Dashboard">
-      <Flex justify="between" wrap="wrap" gap="2" css={{ mb: '$4' }}>
+      <Flex justify="between" align="center" wrap="wrap" gap="2" css={{ mb: '$4' }}>
         <Heading>
           Your most listened to{' '}
           <DropdownMenu>
@@ -53,7 +54,7 @@ export const Dashboard = () => {
                 {type.name}
               </Text>
             </DropdownMenuTrigger>
-            <DropdownMenuContent css={{ zIndex: '$1' }}>
+            <DropdownMenuContent>
               {types.map((item) => (
                 <DropdownMenuItem key={item.name} onClick={() => setType(item)}>
                   {item.name}
@@ -67,7 +68,7 @@ export const Dashboard = () => {
                 {timeRange.name}
               </Text>
             </DropdownMenuTrigger>
-            <DropdownMenuContent css={{ zIndex: '$1' }}>
+            <DropdownMenuContent>
               {timeRanges.map((item) => (
                 <DropdownMenuItem key={item.name} onClick={() => setTimeRange(item)}>
                   {item.name}
@@ -77,55 +78,63 @@ export const Dashboard = () => {
           </DropdownMenu>
         </Heading>
 
-        <Button
-          disabled={!isSuccess}
-          size="1"
-          variant="outline"
-          loading={isLoading}
-          onClick={() =>
-            createPlaylist(top?.items).then((playlist) =>
-              toast({
-                title: 'Success ☀️🪄',
-                description: 'View the curated songs now!',
-                action: (
-                  <Flex gap="1">
-                    <ToastAction altText="Goto schedule to undo" asChild>
-                      <Button size="1" variant="outline">
-                        Later :)
-                      </Button>
-                    </ToastAction>
-
-                    <ToastAction altText="Goto schedule to undo" asChild>
-                      <Button size="1" onClick={() => window.open(playlist.uri)}>
-                        View
-                      </Button>
-                    </ToastAction>
-                  </Flex>
-                ),
-              })
-            )
-          }
+        <Tooltip
+          style={{ zIndex: 99 }}
+          delayDuration={250}
+          content={`Create a playlist based on ${type.name} ${timeRange.name}`}
         >
-          Create ☀️🪄
-        </Button>
+          <Button
+            disabled={!isSuccess}
+            size="1"
+            variant="outline"
+            loading={isLoading}
+            onClick={() =>
+              createPlaylist(top?.items).then((playlist) =>
+                toast({
+                  title: 'Success 🪄',
+                  description: 'View the curated songs now!',
+                  action: (
+                    <Flex gap="1">
+                      <ToastAction altText="View later" asChild>
+                        <Button size="1" variant="outline">
+                          Later :)
+                        </Button>
+                      </ToastAction>
+
+                      <ToastAction altText="View now" asChild>
+                        <Button size="1" onClick={() => window.open(playlist.uri)}>
+                          View
+                        </Button>
+                      </ToastAction>
+                    </Flex>
+                  ),
+                  duration: 99999,
+                })
+              )
+            }
+          >
+            Create playlist 🪄
+          </Button>
+        </Tooltip>
       </Flex>
 
       <Grid
         columns={{ '@initial': 2, '@bp1': 4 }}
-        gap={{ '@initial': '2', '@bp1': '3', '@bp2': '4' }}
+        gap={{ '@initial': '2', '@bp1': '4' }}
+        css={{ rowGap: '$4', mb: '$7' }}
       >
         {isFetching &&
           Array(20)
             .fill(0)
-            .map(() => (
-              <AspectRatio ratio={1}>
+            .map((_, i) => (
+              <AspectRatio key={i} ratio={1}>
                 <Skeleton css={{ height: '100%' }} />
               </AspectRatio>
             ))}
 
         {isSuccess &&
-          top?.items.map((item) => (
-            <Flex gap="2" direction="column">
+          top?.items.map((item, i) => (
+            <Flex key={item.id} gap="2" direction="column">
               <AspectRatio ratio={1}>
                 <Flex
                   align="center"
@@ -138,7 +147,9 @@ export const Dashboard = () => {
                   }}
                 >
                   <Image
-                    src={item.type === 'track' ? item.album.images[0].url : item.images[0].url}
+                    src={
+                      item.type === 'track' ? item.album.images?.[0]?.url : item.images?.[0]?.url
+                    }
                   />
                 </Flex>
               </AspectRatio>
@@ -156,7 +167,7 @@ export const Dashboard = () => {
                     textAlign: 'center',
                   }}
                 >
-                  <Link href={item.uri}>{item.name}</Link>
+                  {i + 1}. <Link href={item.uri}>{item.name}</Link>
                 </Text>
               </Flex>
             </Flex>

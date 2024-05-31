@@ -275,8 +275,8 @@
 //                   disabled={currentStep < step.value}
 //                 >
 //                   <svg
-//                     clip-rule="evenodd"
-//                     fill-rule="evenodd"
+//                     clipRule="evenodd"
+//                     fillRule="evenodd"
 //                     stroke-linejoin="round"
 //                     stroke-miterlimit="2"
 //                     viewBox="0 0 24 24"
@@ -284,7 +284,7 @@
 //                     height={8}
 //                     style={{ opacity: currentStep === step.value ? '1' : '0.2' }}
 //                   >
-//                     <circle cx="11.998" cy="11.998" fill-rule="nonzero" r="9.998" />
+//                     <circle cx="11.998" cy="11.998" fillRule="nonzero" r="9.998" />
 //                   </svg>
 //                 </IconButton>
 //               </Tooltip>

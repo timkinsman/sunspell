@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button, Container, Flex, Heading } from '@nayhoo/components';
 
 export const Landing = () => {
-  const { isLoggingIn, user } = useAuth();
+  const { logout, isLoggingIn, user } = useAuth();
 
   const handleStart = () => {
     if (user) {
@@ -20,10 +20,16 @@ export const Landing = () => {
         <Container size="3" css={{ px: '$2', textAlign: 'center' }}>
           <Heading size="3">sunspell</Heading>
 
-          <Flex justify="center" css={{ mt: '$4' }}>
+          <Flex direction="column" gap="2" justify="center" css={{ mt: '$4' }}>
             <Button onClick={handleStart} loading={isLoggingIn}>
               {user ? `Continue as ${user.display_name}` : 'Get started'}
             </Button>
+
+            {user && (
+              <Button onClick={logout} variant="outline">
+                Log out
+              </Button>
+            )}
           </Flex>
         </Container>
       </Flex>

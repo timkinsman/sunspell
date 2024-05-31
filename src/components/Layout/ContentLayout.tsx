@@ -5,14 +5,20 @@ import { Box, Container, Flex, Link, Text } from '@nayhoo/components';
 
 const Footer = () => {
   return (
-    <Flex align="center" justify="between" as="footer" css={{ p: '$2', mt: 'auto' }} wrap="wrap">
-      <Text size="2">
+    <Flex
+      align="center"
+      justify="between"
+      as="footer"
+      css={{ p: '$2', mt: 'auto', backgroundColor: '$transparentHover' }}
+      wrap="wrap"
+    >
+      <Text size="1">
         Developed by{' '}
         <Link href="https://github.com/timkinsman" target="_blank">
           Tim Kinsman
         </Link>
       </Text>
-      <Text size="2">
+      <Text size="1">
         <Link href="https://github.com/timkinsman/sunspell" target="_blank">
           Source code
         </Link>
