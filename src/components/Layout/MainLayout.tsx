@@ -68,8 +68,10 @@ type MainLayoutProps = {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <Box css={{ height: '100vh' }}>
-      <Flex direction="column" css={{ flex: '1 1 0%', minHeight: '100vh' }}>
+    <Box>
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore */}
+      <Flex direction="column" css={{ flex: '1 1 0%', minHeight: '100vh', minHeight: '100dvh' }}>
         <nav style={{ position: 'sticky', top: 0, zIndex: 1 }}>
           <Flex css={{ p: '$2', backgroundColor: '$background' }}>
             <Flex css={{ flex: '1 1 0%' }} justify="start" align="center">

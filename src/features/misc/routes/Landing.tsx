@@ -16,7 +16,9 @@ export const Landing = () => {
   return (
     <>
       <Head description={`Welcome to sunspell`} />
-      <Flex align="center" css={{ height: '100vh' }}>
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore */}
+      <Flex align="center" css={{ minHeight: '100vh', minHeight: '100dvh' }}>
         <Container size="3" css={{ px: '$2', textAlign: 'center' }}>
           <Heading size="3">sunspell</Heading>
 

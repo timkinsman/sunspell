@@ -16,7 +16,9 @@ export const Layout = ({ children, title }: LayoutProps) => {
         align="center"
         justify="center"
         direction="column"
-        css={{ minHeight: '100vh', py: '$4', px: '$4' }}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        css={{ minHeight: '100vh', minHeight: '100dvh', py: '$4', px: '$4' }}
       >
         <Heading size="3">{title}</Heading>
 

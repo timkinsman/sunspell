@@ -17,7 +17,9 @@ const App = () => {
             direction="column"
             justify="center"
             align="center"
-            css={{ height: '100vh', width: '100vw' }}
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            css={{ minHeight: '100vh', minHeight: '100dvh', width: '100vw' }}
           >
             <Spinner />
           </Flex>
