@@ -18,7 +18,7 @@ const ErrorFallback = () => {
       css={{ minHeight: '100vh', minHeight: '100dvh', width: '100vw' }}
       role="alert"
     >
-      <Heading size="1">Sorry, something went wrong.</Heading>
+      <Heading size="3">Sorry, something went wrong.</Heading>
       <Button css={{ mt: '$4' }} onClick={() => window.location.assign(window.location.origin)}>
         Refresh
       </Button>
