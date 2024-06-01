@@ -12,6 +12,8 @@ export async function getAccessToken(clientId: string, code: string): Promise<vo
   params.append('redirect_uri', REDIRECT_URI);
   params.append('code_verifier', verifier!);
 
+  localStorage.removeItem('verifier');
+
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

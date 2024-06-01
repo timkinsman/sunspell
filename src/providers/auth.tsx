@@ -7,19 +7,20 @@ import { useInterval } from '@/hooks/useInterval';
 import { noop } from '@/utils/noop';
 import { useToast } from '@nayhoo/components';
 import { UserProfile } from '@/features/user/types';
+import { useNavigate } from 'react-router-dom';
 
 const clientId = CLIENT_ID;
 
 export interface useAuthProps {
   isLoggingIn: boolean;
   logout: () => void;
-  user?: UserProfile;
+  user: UserProfile | null;
 }
 
 export const AuthContext = React.createContext<useAuthProps>({
   isLoggingIn: false,
   logout: noop,
-  user: undefined,
+  user: null,
 } as useAuthProps);
 
 type AuthProviderProps = {
@@ -27,15 +28,18 @@ type AuthProviderProps = {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<UserProfile>();
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { authentication, clearAuthentication } = useAuthenticationStore();
   const toast = useToast();
 
+  const navigate = useNavigate();
+
   const logout = useCallback(() => {
+    setUser(null);
     clearAuthentication();
-    window.location.assign(window.location.origin);
-  }, [clearAuthentication]);
+    navigate('/auth/login');
+  }, [clearAuthentication, navigate]);
 
   useEffect(() => {
     if (!authentication) {
@@ -50,9 +54,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         setUser(profile);
       } catch (error) {
-        logout();
+        toast({ title: 'Error', description: `${error}`, error: true });
 
-        toast({ title: 'Error', description: `${error}` });
+        logout();
       } finally {
         setIsLoggingIn(false);
       }
@@ -60,6 +64,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     getUser();
   }, [authentication, logout, toast]);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/app');
+    }
+  }, [user, navigate]);
 
   async function refresh(refreshToken?: string) {
     if (!refreshToken) {

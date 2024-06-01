@@ -4,47 +4,43 @@ import { useEffect, useState } from 'react';
 import { CLIENT_ID } from '@/config';
 import { useAuth } from '@/hooks/useAuth';
 import { Box, Button, Flex, useToast } from '@nayhoo/components';
+import { useSearchParams } from 'react-router-dom';
 
 const clientId = CLIENT_ID;
-const params = new URLSearchParams(window.location.search);
-const code = params.get('code');
 
-type LoginFormProps = {
-  onSuccess: () => void;
-};
-
-export const LoginForm = ({ onSuccess }: LoginFormProps) => {
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const { logout } = useAuth();
+export const LoginForm = () => {
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const { logout, isLoggingIn } = useAuth();
   const toast = useToast();
+  const [searchParams] = useSearchParams();
+
+  const code = searchParams.get('code');
 
   useEffect(() => {
     async function login(code: string) {
       try {
-        setIsLoggingIn(true);
+        setIsVerifyingCode(true);
 
         await getAccessToken(clientId, code);
-
-        onSuccess();
       } catch (error) {
-        toast({ title: 'Error', description: `${error}` });
+        toast({ title: 'Error', description: `${error}`, error: true });
 
         logout();
       } finally {
-        setIsLoggingIn(false);
+        setIsVerifyingCode(false);
       }
     }
 
     if (code) {
       login(code);
     }
-  }, [onSuccess, logout, toast]);
+  }, [logout, toast, code]);
 
   return (
     <Box>
       <Button
         css={{ width: '100%' }}
-        loading={isLoggingIn}
+        loading={isVerifyingCode || isLoggingIn}
         onClick={() => redirectToAuthCodeFlow(clientId)}
       >
         <Flex css={{ mr: '$2' }}>

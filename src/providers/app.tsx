@@ -5,7 +5,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { queryClient } from '@/lib/react-query';
-import { AuthProvider } from './auth';
 import { Button, Flex, Heading, Spinner, Toast } from '@nayhoo/components';
 
 const ErrorFallback = () => {
@@ -52,9 +51,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           <QueryClientProvider client={queryClient}>
             {import.meta.env.DEV && <ReactQueryDevtools />}
             <Toast>
-              <AuthProvider>
-                <Router>{children}</Router>
-              </AuthProvider>
+              <Router>{children}</Router>
             </Toast>
           </QueryClientProvider>
         </HelmetProvider>
