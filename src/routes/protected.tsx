@@ -35,9 +35,7 @@ export const protectedRoutes = [
   {
     path: '/app',
     element: <App />,
-    children: [
-      { path: '/', element: <Dashboard /> },
-      { path: '*', element: <Navigate to="." /> },
-    ],
+    children: [{ path: '/', element: <Dashboard /> }],
   },
+  { path: '/', element: <Navigate to="/app" /> },
 ];
